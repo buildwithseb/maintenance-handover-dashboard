@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Maintenance Handover Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="./bundle.js" defer type="module"></script>
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <nav>
+          <h2 class="sidebar-title">Maintenance Handover Tracker</h2>
+          <ul class="sidebar-list">
+            <li data-page="dashboard">Dashboard</li>
+            <li data-page="machineries">Machineries</li>
+            <li data-page="teleremote">Teleremote</li>
+            <li data-page="handover">Handover Log</li>
+          </ul>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <!-- DASHBOARD -->
+        <section id="dashboard" class="page-section active">
+          <div class="section-header">
+            <div>
+              <h1>Dashboard</h1>
+              <p class="section-subtext">
+                Overview of current fleet, telehut and handover activity
+              </p>
+            </div>
+          </div>
+
+          <div class="date-card">
+            <div class="date-card-header">
+              <div>
+                <h2>Handover Period</h2>
+                <p class="section-subtext">
+                  Current reporting window for this swing
+                </p>
+              </div>
+              <button id="edit-period-btn" class="primary-btn" type="button">
+                Edit Period
+              </button>
+            </div>
+
+            <div class="period-display">
+              <div class="period-box">
+                <span class="period-label">Start</span>
+                <p id="display-start-date">22 Mar 2026</p>
+              </div>
+
+              <div class="period-arrow">→</div>
+
+              <div class="period-box">
+                <span class="period-label">End</span>
+                <p id="display-end-date">29 Mar 2026</p>
+              </div>
+            </div>
+
+            <form id="date-form" class="date-form inactive">
+              <div class="date-range">
+                <div class="field-group">
+                  <label for="start-date-input">Start Date</label>
+                  <input type="date" id="start-date-input" />
+                </div>
+
+                <div class="field-group">
+                  <label for="end-date-input">End Date</label>
+                  <input type="date" id="end-date-input" />
+                </div>
+              </div>
+
+              <div class="date-form-actions">
+                <button type="submit" class="primary-btn">Save</button>
+                <button
+                  id="cancel-date-form-btn"
+                  type="button"
+                  class="small-btn secondary-btn"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="stats">
+            <div class="card stat-card">
+              <h3>Total Machines</h3>
+              <p>0</p>
+            </div>
+
+            <div class="card stat-card">
+              <h3>Available</h3>
+              <p>0</p>
+            </div>
+
+            <div class="card stat-card">
+              <h3>Breakdowns</h3>
+              <p>0</p>
+            </div>
+
+            <div class="card stat-card">
+              <h3>In Progress</h3>
+              <p>0</p>
+            </div>
+          </div>
+
+          <div id="general-note" class="alerts">
+            <div class="card-header-inline">
+              <div>
+                <h2>General Notes</h2>
+                <p class="section-subtext">
+                  Add swing notes for the incoming crew
+                </p>
+              </div>
+            </div>
+
+            <div class="note-input-row">
+              <input type="text" placeholder="Add a general note..." />
+              <button class="primary-btn" type="button">Add note</button>
+            </div>
+
+            <ul class="notes-list"></ul>
+          </div>
+        </section>
+
+        <!-- MACHINERY -->
+        <section id="machineries" class="page-section">
+          <div class="section-header">
+            <div>
+              <h1>Machineries</h1>
+              <p class="section-subtext">
+                Add and monitor current fleet equipment
+              </p>
+            </div>
+          </div>
+
+          <div
+            id="add-machine-form-section"
+            class="form-card machine-entry-card inactive"
+          >
+            <div class="card-header-inline">
+              <div>
+                <h2>Add Machine</h2>
+                <p class="section-subtext">Create a new machine entry</p>
+              </div>
+            </div>
+
+            <form class="machine-form">
+              <div class="form-row">
+                <div class="field-group">
+                  <label for="machine-name">Machine Name / ID</label>
+                  <input
+                    name="name"
+                    type="text"
+                    id="machine-name"
+                    placeholder="e.g. IT270"
+                  />
+                </div>
+
+                <div class="field-group">
+                  <label for="machine-type">Type</label>
+                  <select name="type" id="machine-type">
+                    <option value="" disabled selected>Select type</option>
+                    <option value="loader">Loader</option>
+                    <option value="truck">Truck</option>
+                    <option value="grader">Grader</option>
+                    <option value="concrete_sprayer">Concrete Sprayer</option>
+                    <option value="charmec">Charmec</option>
+                    <option value="longhole">Longhole</option>
+                    <option value="longhole_electric">Longhole Electric</option>
+                    <option value="jumbo">Jumbo</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="field-group">
+                  <label for="machine-status">Status</label>
+                  <select name="status" id="machine-status">
+                    <option value="" disabled selected>Select status</option>
+                    <option value="available">Available</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="breakdown">Breakdown</option>
+                  </select>
+                </div>
+
+                <div class="field-group">
+                  <label for="machine-remote-capable">Remote capable</label>
+                  <select name="remoteCapable" id="machine-remote-capable">
+                    <option value="" disabled selected>Select option</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="field-group">
+                  <label for="machine-name">Notes</label>
+                  <input
+                    name="notes"
+                    id="machine-notes"
+                    type="text"
+                    placeholder="..."
+                  />
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button
+                  id="cancel-add-machine-form-btn"
+                  type="button"
+                  class="small-btn secondary-btn"
+                >
+                  Cancel
+                </button>
+                <button id="add-machine-btn" type="submit" class="primary-btn">Add Machine</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="table-section">
+            <div class="table-header table-header-with-action">
+              <div>
+                <h2>Fleet List</h2>
+                <p>All machines currently in fleet</p>
+              </div>
+
+              <button
+                id="add-machine-to-fleet-btn"
+                type="button"
+                class="primary-btn"
+              >
+                Add Machine To Fleet
+              </button>
+            </div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Machine</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Notes</th>
+                  <th></th>
+                </tr>
+              </thead>
+
+              <tbody id="table-body-list"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- TELEREMOTE -->
+        <section id="teleremote" class="page-section">
+          <div class="section-header">
+            <div>
+              <h1>Teleremote</h1>
+              <p class="section-subtext">
+                Manage telehuts, remote loaders and remote levels
+              </p>
+            </div>
+          </div>
+
+          <div class="two-column tele-columns">
+            <div class="table-section compact-table-section">
+              <div class="table-header telehut-header">
+                <div>
+                  <h2>Telehuts</h2>
+                  <p>Current telehut status</p>
+                </div>
+
+                <button id="add-telehut-to-fleet-btn" class="primary-btn" type="button">
+                  Add Telehut To Fleet
+                </button>
+              </div>
+
+              <form id="telehut-form" class="telehut-form inactive">
+                <div class="form-row">
+                  <div class="field-group">
+                    <label for="telehut-name">Telehut ID</label>
+                    <input
+                      name="name"
+                      type="text"
+                      id="telehut-name"
+                      placeholder="e.g. BZ0055"
+                    />
+                  </div>
+
+                  <div class="field-group">
+                    <label for="telehut-location">Location</label>
+                    <input
+                      name="location"
+                      type="text"
+                      id="telehut-location"
+                      placeholder="e.g. 1750 West Drive"
+                    />
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="field-group">
+                    <label for="telehut-status">Status</label>
+                    <select name="status" id="telehut-status">
+                      <option value="" disabled selected>Select status</option>
+                      <option value="running">Running</option>
+                      <option value="standby">Standby</option>
+                      <option value="down">Down</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-actions telehut-form-actions">
+                  <button
+                    id="cancel-telehut-form-btn"
+                    type="button"
+                    class="small-btn secondary-btn"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    id="save-telehut-btn"
+                    type="submit"
+                    class="primary-btn"
+                  >
+                    Add Telehut
+                  </button>
+                </div>
+              </form>
+
+              <table class="compact-table">
+                <thead>
+                  <tr>
+                    <th>Telehut</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="telehut-table-body"></tbody>
+              </table>
+            </div>
+
+            <div class="table-section compact-table-section">
+              <div class="table-header">
+                <h2>Remote Loaders</h2>
+                <p>Current remote loader status</p>
+              </div>
+
+              <table class="compact-table compact-loader-table">
+                <thead>
+                  <tr>
+                    <th>Loader</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="remote-capable-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="table-section">
+            <div class="table-header table-header-with-action">
+              <div>
+                <h2>Remote Levels</h2>
+                <p>Editable list of current remote levels</p>
+              </div>
+
+              <button id="remote-level-form-btn" type="button" class="primary-btn">
+                Add Remote Level
+              </button>
+            </div>
+
+            <form id="add-level-form" class="machine-form inactive">
+              <div class="form-row">
+                <div class="field-group">
+                  <label for="remote-level-location">Location</label>
+                  <input
+                    name="location"
+                    type="text"
+                    id="remote-level-location"
+                    placeholder="e.g. North decline"
+                  />
+                </div>
+
+                <div class="field-group">
+                  <label for="remote-level-status">Status</label>
+                  <select name="status" id="remote-level-status">
+                    <option value="">Select status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="in_progress">In-progress</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="field-group">
+                  <label for="remote-level-location">Notes</label>
+                  <input
+                    name="notes"
+                    id="remote-level-notes"
+                    type="text"
+                    placeholder="..."
+                  />
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button
+                  id="cancel-add-level-form-btn"
+                  type="button"
+                  class="small-btn secondary-btn"
+                >
+                  Cancel
+                </button>
+                <button id="add-remote-level-bt" type="submit" class="primary-btn">
+                  Save Remote Level
+                </button>
+              </div>
+            </form>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Remote Level</th>
+                  <th>Status</th>
+                  <th>Notes</th>
+                  <th></th>
+                </tr>
+              </thead>
+
+              <tbody id="level-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- HANDOVER -->
+        <section id="handover" class="page-section">
+          <div class="section-header">
+            <div>
+              <h1>Handover Log</h1>
+              <p class="section-subtext">Open items for the next crew</p>
+            </div>
+          </div>
+
+          <div class="table-section">
+            <div class="table-header">
+              <h2>Current Handover Entries</h2>
+              <p>Open and ongoing items for next crew</p>
+            </div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Machinery/Level</th>
+                  <th>Status</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody id="handover-table-body"></tbody>
+            </table>
+          </div>
+
+          <div class="alerts handover-notes-card">
+            <div class="card-header-inline">
+              <div>
+                <h2>General Notes</h2>
+                <p class="section-subtext">
+                  Notes entered from the dashboard for the incoming crew
+                </p>
+              </div>
+            </div>
+
+            <ul id="handover-general-notes-list" class="notes-list"></ul>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
