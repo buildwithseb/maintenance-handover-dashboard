@@ -9,17 +9,11 @@ const { getDB } = require("../config/db");
 //--------- Counvert _id into id before sending data back to frontend ---------\\
 function formatDocument(doc) {
     if (!doc) return null;
-    return {
-        ...doc,
-        id: doc._id.toString()
 
+    const { _id, ...rest } = doc;
+    return { id: _id.toString(), ...rest };
 
-    };
 }
-
-// function formatDocuments(docs) {
-//     return docs.map(formatDocument);
-// }
 
 //------------------------------------------------------------------------------\\
 
@@ -119,7 +113,7 @@ router.post("/machinery", async (req, res, next) => {
         const savedMachinery = await db.collection("machinery").findOne({
             _id: result.insertedId
         });
-
+        console.log(formatDocument(savedMachinery));
         res.status(201).json(formatDocument(savedMachinery));
 
     } catch (error) {
@@ -316,7 +310,7 @@ router.delete("/general-note/:id", async (req, res, next) => {
         const { id } = req.params;
 
         if (!ObjectId.isValid(id)) {
-            res.status(400).json({ message: "Invalid id" })
+            return res.status(400).json({ message: "Invalid id" })
         }
 
         const result = await db.collection("general-note").deleteOne({
@@ -341,7 +335,7 @@ router.delete("/machinery/:id", async (req, res, next) => {
         const { id } = req.params;
 
         if (!ObjectId.isValid(id)) {
-            res.status(400).json({ message: "Invalid id" })
+            return res.status(400).json({ message: "Invalid id" })
         }
         const result = await db.collection("machinery").deleteOne({
             _id: new ObjectId(id)
@@ -366,7 +360,7 @@ router.delete("/telehut/:id", async (req, res, next) => {
         const { id } = req.params;
 
         if (!ObjectId.isValid(id)) {
-            res.status(400).json({ message: "Invalid id" })
+            return res.status(400).json({ message: "Invalid id" })
         }
 
         const result = await db.collection("telehut").deleteOne({
@@ -391,7 +385,7 @@ router.delete("/remote-level/:id", async (req, res, next) => {
         const { id } = req.params;
 
         if (!ObjectId.isValid(id)) {
-            res.status(400).json({ message: "Invalid id" })
+            return res.status(400).json({ message: "Invalid id" })
         }
 
         const result = await db.collection("remote-level").deleteOne({
