@@ -1,8 +1,10 @@
 const express = require("express");
+const { objectId, ObjectId } = require("mongodb");
 
 const router = express.Router();
 
 const crypto = require("crypto");
+const { getDB } = require("../config/db");
 
 const machineryList =
     [
@@ -26,35 +28,45 @@ const telehutList = [];
 const remoteLevelList = [];
 const generalNoteList = [];
 
+//--------- Counvert _id into id before sending data back to frontend ---------\\
+function formatDocument(doc) {
+    if (!doc) return null;
+    return {
+        ...doc,
+        id: doc._id.toString()
 
-router.get("/machinery", (req, res, next) => {
+
+    };
+}
+
+// function formatDocuments(docs) {
+//     return docs.map(formatDocument);
+// }
+
+//------------------------------------------------------------------------------\\
+
+
+router.get("/general-note", async (req, res, next) => {
 
     try {
-        const data = machineryList;
-        res.json(data);
+        const db = getDB();
+        const generalNote = await db.collection("general-note").find().toArray();
+        res.json(generalNote.map(formatDocument));
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error" });
     }
 });
 
-router.get("/telehut", (req, res, next) => {
 
-    try {
-        const data = telehutList;
-        res.status(200).json(data);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Server error" });
-    }
-});
-
-router.get("/remote-level", (req, res, next) => {
+router.get("/machinery", async (req, res, next) => {
 
 
     try {
-        const data = remoteLevelList;
-        res.status(200).json(data);
+        const db = getDB();
+        const machinery = await db.collection("machinery").find().toArray();
+        res.json(machinery.map(formatDocument));
 
     } catch (error) {
         console.error(error);
@@ -62,26 +74,49 @@ router.get("/remote-level", (req, res, next) => {
     }
 });
 
-router.get("/general-note", (req, res, next) => {
+router.get("/telehut", async (req, res, next) => {
 
     try {
-        const data = generalNoteList
-        res.status(200).json(data);
+        const db = getDB();
+        const telehut = await db.collection("telehut").find().toArray();
+        res.json(telehut.map(formatDocument));
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error" });
     }
 });
 
-router.post("/general-note", (req, res, next) => {
+router.get("/remote-level", async (req, res, next) => {
+
+
     try {
+        const db = getDB();
+        const remoteLevel = await db.collection("remote-level").find().toArray();
+        res.json(remoteLevel.map(formatDocument));
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+
+
+router.post("/general-note", async (req, res, next) => {
+    try {
+        const db = getDB();
         const newGeneralNote = req.body;
+
         if (!newGeneralNote.text || !newGeneralNote.createdAt) {
             return res.status(400).json({ message: "Note bad input" })
         }
-        newGeneralNote.id = crypto.randomUUID();
-        generalNoteList.push(newGeneralNote)
-        res.status(201).json(newGeneralNote);
+
+        const result = await db.collection("general-note").insertOne(newGeneralNote);
+        const savedGeneralNote = await db.collection("general-note").findOne({
+            _id: result.insertedId
+        });
+        res.status(201).json(formatDocument(savedGeneralNote));
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error" });
@@ -89,18 +124,26 @@ router.post("/general-note", (req, res, next) => {
 });
 
 
-router.post("/machinery", (req, res, next) => {
+router.post("/machinery", async (req, res, next) => {
     try {
+        const db = getDB();
         const newMachinery = req.body;
-        if (!newMachinery.name ||
+
+        if (
+            !newMachinery.name ||
             !newMachinery.type ||
             !newMachinery.status ||
             typeof newMachinery.remoteCapable !== "boolean") {
             return res.status(400).json({ message: "Machinery bad input" })
         }
-        newMachinery.id = crypto.randomUUID();
-        machineryList.push(newMachinery);
-        res.status(201).json(newMachinery);
+
+        const result = await db.collection("machinery").insertOne(newMachinery);
+        const savedMachinery = await db.collection("machinery").findOne({
+            _id: result.insertedId
+        });
+
+        res.status(201).json(formatDocument(savedMachinery));
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error" });
@@ -108,15 +151,21 @@ router.post("/machinery", (req, res, next) => {
 });
 
 
-router.post("/telehut", (req, res, next) => {
+router.post("/telehut", async (req, res, next) => {
     try {
+        const db = getDB();
         const newTelehut = req.body;
+
         if (!newTelehut.name || !newTelehut.location || !newTelehut.status) {
             return res.status(400).json({ message: "Telehut bad input" })
         }
-        newTelehut.id = crypto.randomUUID();
-        telehutList.push(newTelehut);
-        res.status(201).json(newTelehut);
+
+        const result = await db.collection("telehut").insertOne(newTelehut);
+        const savedTelehut = await db.collection("telehut").findOne(
+            { _id: result.insertedId }
+        );
+
+        res.status(201).json(formatDocument(savedTelehut));
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error" });
@@ -124,15 +173,20 @@ router.post("/telehut", (req, res, next) => {
 });
 
 
-router.post("/remote-level", (req, res, next) => {
+router.post("/remote-level", async (req, res, next) => {
     try {
+        const db = getDB();
         const newRemoteLevel = req.body;
+
         if (!newRemoteLevel.location || !newRemoteLevel.status) {
             return res.status(400).json({ message: "Remote level bad input" })
         }
-        newRemoteLevel.id = crypto.randomUUID();
-        remoteLevelList.push(newRemoteLevel)
-        res.status(201).json(newRemoteLevel);
+        const result = await db.collection("remote-level").insertOne(newRemoteLevel);
+        const savedRemoteLevel = await db.collection("remote-level").findOne({
+            _id: result.insertedId
+        })
+        res.status(201).json(formatDocument(savedRemoteLevel));
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error" });
@@ -140,16 +194,30 @@ router.post("/remote-level", (req, res, next) => {
 });
 
 
-router.put("/general-note/:id", (req, res, next) => {
+router.put("/general-note/:id", async (req, res, next) => {
     try {
-        const generalNote = generalNoteList.find(n => n.id.toString() === req.params.id);
-        if (!generalNote) {
+        const db = getDB();
+        const { id } = req.params;
+
+        if (!ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid id" })
+        }
+
+        const result = await db.collection("general-note").updateOne(
+            { _id: new ObjectId(id) }, {
+            $set: {
+                text: req.body.text,
+                createdAt: req.body.createdAt
+            }
+        });
+        const updated = await db.collection("general-note").findOne({
+            _id: new ObjectId(id)
+        })
+        if (!updated) {
             return res.status(404).json({ message: "Note not found" });
         }
-        generalNote.text = req.body.text ?? generalNote.text;
-        generalNote.createdAt = req.body.createdAt ?? generalNote.createdAt;
+        res.json(formatDocument(updated));
 
-        res.json(generalNote);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error" });
@@ -157,19 +225,39 @@ router.put("/general-note/:id", (req, res, next) => {
 });
 
 
-router.put("/machinery/:id", (req, res, next) => {
+router.put("/machinery/:id", async (req, res, next) => {
     try {
-        const machinery = machineryList.find(m => m.id.toString() === req.params.id);
-        if (!machinery) {
+        const db = getDB();
+        const { id } = req.params;
+
+
+        if (!ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid id" })
+        }
+
+        const result = await db.collection("machinery").updateOne(
+            { _id: new ObjectId(id) },
+            {
+                $set: {
+                    name: req.body.name,
+                    type: req.body.type,
+                    status: req.body.status,
+                    remoteCapable: req.body.remoteCapable,
+                    notes: req.body.notes
+                }
+            }
+        );
+
+        const updated = await db.collection("machinery").findOne({
+            _id: new ObjectId(id)
+        });
+
+        if (!updated) {
             return res.status(404).json({ message: "Machinery not found" });
-        };
-        machinery.name = req.body.name ?? machinery.name;
-        machinery.type = req.body.type ?? machinery.type;
-        machinery.status = req.body.status ?? machinery.status;
-        machinery.remoteCapable = req.body.remoteCapable ?? machinery.remoteCapable;
-        machinery.notes = req.body.notes ?? machinery.notes;
+        }
 
-        res.json(machinery);
+        res.json(formatDocument(updated));
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error" });
@@ -177,18 +265,34 @@ router.put("/machinery/:id", (req, res, next) => {
 });
 
 
-router.put("/telehut/:id", (req, res, next) => {
+router.put("/telehut/:id", async (req, res, next) => {
     try {
-        const telehut = telehutList.find(tel => tel.id.toString() === req.params.id);
-        if (!telehut) {
-            return res.status(404).json({ message: "Telehut not found" })
+        const db = getDB();
+        const { id } = req.params;
+
+        if (!ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid id" })
         };
 
-        telehut.name = req.body.name ?? telehut.name;
-        telehut.location = req.body.location ?? telehut.location;
-        telehut.status = req.body.status ?? telehut.status;
+        const result = await db.collection("telehut").updateOne({
+            _id: new ObjectId(id)
+        }, {
+            $set: {
+                name: req.body.name,
+                location: req.body.location,
+                status: req.body.status
+            }
+        })
 
-        res.json(telehut)
+        const updated = await db.collection("telehut").findOne({
+            _id: new ObjectId(id)
+        })
+
+        if (!updated) {
+            return res.status(404).json({ message: "Telehut not found" });
+        }
+        res.json(formatDocument(updated));
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error" });
@@ -196,17 +300,30 @@ router.put("/telehut/:id", (req, res, next) => {
 });
 
 
-router.put("/remote-level/:id", (req, res, next) => {
+router.put("/remote-level/:id", async (req, res, next) => {
     try {
-        const remoteLevel = remoteLevelList.find(lev => lev.id.toString() === req.params.id);
-        if (!remoteLevel) {
-            return res.status(404).json({ message: "Remote level not found" })
+        const db = getDB();
+        const { id } = req.params;
+
+        if (!ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid id" })
         }
-        remoteLevel.location = req.body.location ?? remoteLevel.location;
-        remoteLevel.status = req.body.status ?? remoteLevel.status;
-        remoteLevel.notes = req.body.notes ?? remoteLevel.notes;
-        
-        res.json(remoteLevel);
+
+        const result = await db.collection("remote-level").updateOne({
+            _id: new ObjectId(id)
+        }, {
+            $set: {
+                location: req.body.location,
+                status: req.body.status,
+                notes: req.body.notes
+            }
+        });
+
+        const updated = await db.collection("remote-level").findOne({
+            _id: new ObjectId(id)
+        })
+        res.json(formatDocument(updated));
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error" });
@@ -214,14 +331,25 @@ router.put("/remote-level/:id", (req, res, next) => {
 });
 
 
-router.delete("/general-note/:id", (req, res, next) => {
+router.delete("/general-note/:id", async (req, res, next) => {
+
     try {
-        const index = generalNoteList.findIndex(note => note.id.toString() === req.params.id);
-        if (index === -1) {
-            return res.status(404).json({ message: "General note not found" })
+        const db = getDB();
+        const { id } = req.params;
+
+        if (!ObjectId.isValid(id)) {
+            res.status(400).json({ message: "Invalid id" })
         }
-        generalNoteList.splice(index, 1);
-        res.json(req.params.id);
+
+        const result = await db.collection("general-note").deleteOne({
+            _id: new ObjectId(id)
+        });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: "General note not found" });
+        }
+        res.json(id);
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error" });
@@ -229,14 +357,24 @@ router.delete("/general-note/:id", (req, res, next) => {
 });
 
 
-router.delete("/machinery/:id", (req, res, next) => {
+router.delete("/machinery/:id", async (req, res, next) => {
     try {
-        const index = machineryList.findIndex(ma => ma.id.toString() === req.params.id);
-        if (index === -1) {
-            return res.status(404).json({ message: "Machinery not found" })
+        const db = getDB();
+        const { id } = req.params;
+
+        if (!ObjectId.isValid(id)) {
+            res.status(400).json({ message: "Invalid id" })
         }
-        machineryList.splice(index, 1);
-        res.json(req.params.id);
+        const result = await db.collection("machinery").deleteOne({
+            _id: new ObjectId(id)
+        });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: "Machinery not found" });
+        }
+
+        res.json(id);
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error" });
@@ -244,14 +382,24 @@ router.delete("/machinery/:id", (req, res, next) => {
 });
 
 
-router.delete("/telehut/:id", (req, res, next) => {
+router.delete("/telehut/:id", async (req, res, next) => {
     try {
-        const index = telehutList.findIndex(tel => tel.id.toString() === req.params.id);
-        if (index === -1) {
-            return res.status(404).json({ message: "Telehut not found" })
+        const db = getDB();
+        const { id } = req.params;
+
+        if (!ObjectId.isValid(id)) {
+            res.status(400).json({ message: "Invalid id" })
         }
-        telehutList.splice(index, 1);
-        res.json(req.params.id);
+
+        const result = await db.collection("telehut").deleteOne({
+            _id: new ObjectId(id)
+        });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: "Telehut not found" });
+        }
+        res.json(id);
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error" });
@@ -259,14 +407,24 @@ router.delete("/telehut/:id", (req, res, next) => {
 });
 
 
-router.delete("/remote-level/:id", (req, res, next) => {
+router.delete("/remote-level/:id", async (req, res, next) => {
     try {
-        const index = remoteLevelList.findIndex(lev => lev.id.toString() === req.params.id);
-        if (index === -1) {
-            return res.status(404).json({ message: "Remote level not found" })
+        const db = getDB();
+        const { id } = req.params;
+
+        if (!ObjectId.isValid(id)) {
+            res.status(400).json({ message: "Invalid id" })
         }
-        remoteLevelList.splice(index, 1);
-        res.json(req.params.id);
+
+        const result = await db.collection("remote-level").deleteOne({
+            _id: new ObjectId(id)
+        });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: "Remote level not found" });
+        }
+        res.json(id);
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error" });

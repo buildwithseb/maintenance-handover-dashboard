@@ -12,6 +12,8 @@
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "ejs": "^5.0.1",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "mongobd": "^0.0.1-security.0",
+    "mongodb": "^7.1.1"
   }
 }

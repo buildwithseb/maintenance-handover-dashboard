@@ -102,7 +102,10 @@ export default class AppController {
                 try {
                     const updatedGeneralNote = this.generalNoteList.find(el => el.id.toString() === this.editGeneralNoteId);
                     updatedGeneralNote.text = textInput;
+                    delete updatedGeneralNote._id;
+                    
                     const savedGeneralNote = await EquipmentService.updateGeneralNote(updatedGeneralNote, updatedGeneralNote.id);
+                    
                     this.generalNoteList = this.generalNoteList.map(note => note.id === savedGeneralNote.id ? savedGeneralNote : note)
                     this.render();
                 } catch (err) { console.error(err) };
@@ -182,8 +185,10 @@ export default class AppController {
                         alert("Please fill all required fields before saving changes");
                         return;
                     }
+               
                     const savedMachinery = await EquipmentService.updateMachinery(updatedMachinery, updatedMachinery.id);
                     this.machineryList = this.machineryList.map(machine => machine.id === savedMachinery.id ? savedMachinery : machine);
+              
                     this.render();
                 } catch (error) { console.error("Failed to load data:", error) };
 
@@ -207,7 +212,7 @@ export default class AppController {
                 const newMachinery = await EquipmentService.postData(new Machinery(
                     machineNameInput, machineTypeInput, machineStatusInput, machineRemoteCapableInput, machineNoteInput),
                     "machinery");
-
+        
                 this.machineryList.push(newMachinery);
 
                 this.render();
@@ -299,6 +304,7 @@ export default class AppController {
                         alert("Please fill all required fields before saving changes");
                         return;
                     }
+                 
                     const savedTelehut = await EquipmentService.updateTelehut(updatedTelehut, updatedTelehut.id)
                     this.telehutList = this.telehutList.map(telehut => telehut.id === savedTelehut.id ? savedTelehut : telehut);
                     this.render();

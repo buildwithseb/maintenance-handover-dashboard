@@ -66,6 +66,7 @@ export default class EquipmentService {
     // -------------UPDATE DATA--------------\\
 
     static async updateGeneralNote(data, id) {
+
         const res = await fetch(`${this.baseUrl}/general-note/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -80,6 +81,7 @@ export default class EquipmentService {
     }
 
     static async updateMachinery(data, id) {
+
         const res = await fetch(`${this.baseUrl}/machinery/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
