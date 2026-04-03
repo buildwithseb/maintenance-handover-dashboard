@@ -1,32 +1,10 @@
 const express = require("express");
-const { objectId, ObjectId } = require("mongodb");
+const { ObjectId } = require("mongodb");
 
 const router = express.Router();
 
-const crypto = require("crypto");
 const { getDB } = require("../config/db");
 
-const machineryList =
-    [
-        {
-            id: crypto.randomUUID(),
-            name: "LH517/01",
-            type: "loader",
-            status: "available",
-            remoteCapable: true,
-            notes: "Notes goes here"
-        }, {
-            id: crypto.randomUUID(),
-            name: "LH517/012",
-            type: "loader",
-            status: "available",
-            remoteCapable: true,
-            notes: "Notes goes hereeeee"
-        }];
-
-const telehutList = [];
-const remoteLevelList = [];
-const generalNoteList = [];
 
 //--------- Counvert _id into id before sending data back to frontend ---------\\
 function formatDocument(doc) {
