@@ -25,7 +25,9 @@ module.exports = (env, argv) => {
     devtool: isProduction ? "source-map" : "eval-cheap-module-source-map",
 
     plugins: [
-      new Dotenv(),
+      new Dotenv(
+        { systemvars: true, }
+      ),
       new CopyPlugin({
         patterns: [
           { from: "index.html", to: "index.html" },
