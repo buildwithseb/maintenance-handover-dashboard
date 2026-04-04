@@ -1,26 +1,37 @@
-const path = require('path');
+const path = require("path");
 const Dotenv = require("dotenv-webpack");
+const CopyPlugin = require("copy-webpack-plugin");
 
-module.exports = {
-  mode: 'production', // Set mode to development or production
-  entry: './src/app.js',
+module.exports = (env, argv) => {
+  const isProduction = argv.mode === "production";
 
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js',
-  },
-  devServer: {
+  return {
+    mode: isProduction ? "production" : "development",
+    entry: "./src/app.js",
 
-    static: {
-      directory: path.resolve(__dirname),//serve index.html (remove 'dist' if index.html in root folder
+    output: {
+      path: path.resolve(__dirname, "dist"),
+      filename: "bundle.js",
+      clean: true,
     },
-    open: true, //opens browser window automatically
-  },
 
-  devtool: 'eval-cheap-module-source-map',
+    devServer: {
+      static: {
+        directory: path.resolve(__dirname),
+      },
+      open: true,
+    },
 
-  plugins: [
-    new Dotenv()
-  ]
+    devtool: isProduction ? "source-map" : "eval-cheap-module-source-map",
 
+    plugins: [
+      new Dotenv(),
+      new CopyPlugin({
+        patterns: [
+          { from: "index.html", to: "index.html" },
+          { from: "styles.css", to: "styles.css", noErrorOnMissing: true }
+        ],
+      }),
+    ],
+  };
 };
