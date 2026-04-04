@@ -24,7 +24,7 @@ export default class Ui {
         for (const note of generalNoteList) {
             const newLi = document.createElement("li");
             newLi.dataset.id = note.id;
-            newLi.innerHTML=`
+            newLi.innerHTML = `
                     <div>
                         <p>${note.text}</p>
                         <button id="edit-btn"class="small-btn" data-action="edit">Edit</button>
@@ -38,11 +38,11 @@ export default class Ui {
 
     static renderMachineries(machineryList, machineryRootList) {
 
-        
+
         machineryRootList.innerHTML = "";
         for (const machine of machineryList) {
             const badgeClass = this.getBadgeClassColor(machine.status);
-            const newMachineryEl = document.createElement('tr');    
+            const newMachineryEl = document.createElement('tr');
             newMachineryEl.dataset.id = machine.id;
             newMachineryEl.innerHTML = `
                 
@@ -71,7 +71,7 @@ export default class Ui {
 
     static renderTelehut(telehutList, telehutTableBody) {
 
-        
+
         telehutTableBody.innerHTML = "";
 
         for (const telehut of telehutList) {
@@ -111,7 +111,7 @@ export default class Ui {
 
     static renderRemoteLevels(remoteLevelList, remoteLevelRootList) {
 
-        
+
         remoteLevelRootList.innerHTML = "";
         for (const level of remoteLevelList) {
             const badgeClass = this.getBadgeClassColor(level.status);
@@ -162,7 +162,7 @@ export default class Ui {
     static openForm(formElement, openFrombtn, addBtn) {
         formElement.classList.remove('inactive');
         openFrombtn.classList.add("inactive");
-   
+
     }
 
     static closeForm(formElement, btnElement) {
@@ -183,4 +183,39 @@ export default class Ui {
         document.getElementById(elementId).classList.add("active");
     }
 
+
+    //LOADING METHODS
+
+
+    static showLoading() {
+        const loading = document.getElementById("loading-state inactive");
+        if (loading) {
+            loading.classList.remove("inactive");
+            console.dir(loading);
+        };
+    }
+
+    static hideLoading() {
+        const loading = document.getElementById("loading-state");
+        if (loading) loading.classList.add("inactive");
+    }
+
+    static showError(message) {
+        const errorBox = document.getElementById("error-state");
+        if (!errorBox) return;
+
+        errorBox.textContent = message;
+        errorBox.classList.remove("inactive");
+    }
+
+    static hideError() {
+        const errorBox = document.getElementById("error-state");
+        if (!errorBox) return;
+
+        errorBox.textContent = "";
+        errorBox.classList.add("inactive");
+    }
+
 }
+
+

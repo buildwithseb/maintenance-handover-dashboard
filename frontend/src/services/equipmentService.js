@@ -3,15 +3,12 @@
 export default class EquipmentService {
 
     static baseUrl = process.env.API_BASE_URL || "http://localhost:3000";
-    
-
-
-
 
     // -------------GET DATA--------------\\
 
 
     static async fetchLists() {
+
         const [machineryRes, telehutRes, remoteLevelRes, generalNoteRes] = await Promise.all(
             [
                 fetch(`${this.baseUrl}/machinery`),
