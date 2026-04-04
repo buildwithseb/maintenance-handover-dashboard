@@ -6,7 +6,7 @@ const { connectDB } = require("./config/db.js")
 
 const app = express();
 
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 const frontEndUrl = process.env.FRONTEND_URL || "http://localhost:8081";
 
 app.use(cors({
