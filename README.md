@@ -88,6 +88,20 @@ The app uses a **separated frontend/backend architecture** with MongoDB as the d
 
 ---
 
+## Data Mode
+
+The frontend supports two persistence modes:
+
+- `MUTATION_MODE=local` → uses `localStorage` for local development, testing, and seed data resets
+- `MUTATION_MODE=api` → uses the backend API with MongoDB for persistent storage
+
+This setup makes it easy to develop quickly without depending on the backend, while still supporting the full production stack.
+
+
+
+
+---
+
 ## 🧪 Run Locally
 
 ```bash
