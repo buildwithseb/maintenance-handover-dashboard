@@ -5,6 +5,8 @@ import EquipmentService from "../services/equipmentService.js";
 
 export default class AppController {
 
+    MUTATION_MODE = process.env.MUTATION_MODE;
+
     constructor() {
         this.machineryList = [];
         this.telehutList = [];
@@ -24,31 +26,27 @@ export default class AppController {
         this.bindSideBarEvents();
         this.bindEvents();
 
-        const cachedData = this.getCache();
 
-        if (cachedData) {
-            this.setLists(cachedData);
-            this.render();
-            Ui.hideLoading();
-        } else {
-            console.log("showLoading");
+        this.isSeeded = localStorage.getItem("dashboardSeeded") === "true";
+
+        if (!this.isSeeded || this.MUTATION_MODE === "api") {
             Ui.showLoading();
-        }
+            try {
+                const freshData = await EquipmentService.fetchLists();
+                this.setLists(freshData);
+                localStorage.setItem("dashboardSeeded", "true");
 
-        try {
-            const freshData = await EquipmentService.fetchLists();
-            this.setLists(freshData);
-            this.saveCache();
-            this.render();
-        } catch (error) {
-            console.error("Failed to load data:", error);
-
-            if (!cachedData) {
-                Ui.showError("Could not load dashboard data.");
+            } catch (error) {
+                console.error("Failed to load data:", error);
+            } finally {
+                Ui.hideLoading();
             }
-        } finally {
-            Ui.hideLoading();
+
+        } else if (this.MUTATION_MODE === "local"){
+            const cachedData = await EquipmentService.getAllCache();
+            this.setLists(cachedData);
         }
+        this.render();
     }
 
 
@@ -71,11 +69,35 @@ export default class AppController {
     bindDashboardEvents() {
 
         this.generalNoteListElement = document.querySelector("#general-note ul");
+        const resetDataBtn = document.getElementById("reset-data-btn");
         const editPeriodBtn = document.getElementById("edit-period-btn");
         const cancelDateFormBtn = document.getElementById("cancel-date-form-btn");
         const dateForm = document.querySelector('.date-form');
         const addGeneralNoteBtn = document.querySelector("#general-note button");
         const noteInput = document.querySelector("#general-note input");
+
+        if(this.MUTATION_MODE === "local"){
+
+            console.log("test")
+            Ui.showButton("reset-data-btn");
+        }
+
+        resetDataBtn.addEventListener("click", async () => {
+            localStorage.clear()
+            Ui.showLoading();
+            try {
+                const freshData = await EquipmentService.fetchLists();
+                this.setLists(freshData);
+                localStorage.setItem("dashboardSeeded", "true");
+
+            } catch (error) {
+                console.error("Failed to load data:", error);
+            } finally {
+                Ui.hideLoading();
+            }
+            this.render()
+        })
+
 
 
         //DATE SECTION
@@ -117,12 +139,9 @@ export default class AppController {
                 try {
                     const updatedGeneralNote = this.generalNoteList.find(el => el.id.toString() === this.editGeneralNoteId);
                     updatedGeneralNote.text = textInput;
-                    delete updatedGeneralNote._id;
+                    const updatedNote = await EquipmentService.updateGeneralNote(updatedGeneralNote, updatedGeneralNote.id);
+                    this.generalNoteList = this.generalNoteList.map(note => note.id === updatedNote.id ? updatedNote : note);
 
-                    const savedGeneralNote = await EquipmentService.updateGeneralNote(updatedGeneralNote, updatedGeneralNote.id);
-
-                    this.generalNoteList = this.generalNoteList.map(note => note.id === savedGeneralNote.id ? savedGeneralNote : note);
-                    this.saveCache();
                     this.render();
                 } catch (err) { console.error(err) };
 
@@ -134,9 +153,10 @@ export default class AppController {
 
             try {
 
-                const newGeneralNoteAdded = await EquipmentService.postData(new GeneralNote(textInput), "general-note");
-                this.generalNoteList.push(newGeneralNoteAdded);
-                this.saveCache();
+                const newGeneralNote = await EquipmentService.addGeneralNote(new GeneralNote(textInput), "general-note");
+                this.generalNoteList.push(newGeneralNote);
+
+
                 this.render();
 
             } catch (error) { console.error("Failed to load data:", error) }
@@ -168,7 +188,6 @@ export default class AppController {
 
                 this.editGeneralNoteId = null;
                 noteInput.value = "";
-                this.saveCache();
                 this.render()
 
             }
@@ -205,7 +224,6 @@ export default class AppController {
 
                     const savedMachinery = await EquipmentService.updateMachinery(updatedMachinery, updatedMachinery.id);
                     this.machineryList = this.machineryList.map(machine => machine.id === savedMachinery.id ? savedMachinery : machine);
-                    this.saveCache();
                     this.render();
                 } catch (error) { console.error("Failed to load data:", error) };
 
@@ -226,12 +244,11 @@ export default class AppController {
                     return;
                 }
 
-                const newMachinery = await EquipmentService.postData(new Machinery(
+                const newMachinery = await EquipmentService.addMachinery(new Machinery(
                     machineNameInput, machineTypeInput, machineStatusInput, machineRemoteCapableInput, machineNoteInput),
                     "machinery");
 
                 this.machineryList.push(newMachinery);
-                this.saveCache();
                 this.render();
             } catch (error) { console.error("Failed to load data:", error) };
 
@@ -275,7 +292,6 @@ export default class AppController {
                     const machineryToDelete = this.machineryList.find(el => el.id.toString() === tr.dataset.id);
                     const deletedId = await EquipmentService.deleteMachinery(machineryToDelete.id);
                     this.machineryList = this.machineryList.filter(machine => machine.id !== deletedId);
-                    this.saveCache();
                     this.render();
                 } catch (error) { console.error("Failed to load data:", error) };
 
@@ -325,7 +341,6 @@ export default class AppController {
 
                     const savedTelehut = await EquipmentService.updateTelehut(updatedTelehut, updatedTelehut.id)
                     this.telehutList = this.telehutList.map(telehut => telehut.id === savedTelehut.id ? savedTelehut : telehut);
-                    this.saveCache();
                     this.render();
                 } catch (error) { console.error("Failed to load data:", error) };
 
@@ -342,12 +357,11 @@ export default class AppController {
                     alert("Please fill all required fields before adding new telehut to fleet");
                     return;
                 }
-                const newTelehut = await EquipmentService.postData(
+                const newTelehut = await EquipmentService.addTelehut(
                     new Telehut(telehutIdInput, telehutLocationInput, telehutStatusInput),
                     "telehut");
 
                 this.telehutList.push(newTelehut);
-                this.saveCache();
                 this.render()
             } catch (error) { console.log("Failed to load data:", error) };
             addTelehutForm.reset()
@@ -377,7 +391,6 @@ export default class AppController {
                     const telehutToDelete = this.telehutList.find(tele => tele.id.toString() === tr.dataset.id)
                     const deletedId = await EquipmentService.deleteTelehut(telehutToDelete.id);
                     this.telehutList = this.telehutList.filter(telehut => telehut.id !== deletedId);
-                    this.saveCache();
                     this.render();
                 } catch (error) { console.log("Failed to load data:", error) };
 
@@ -421,7 +434,6 @@ export default class AppController {
 
                     const savedRemoteLevel = await EquipmentService.updateRemoteLevel(updatedRemoteLevel, updatedRemoteLevel.id);
                     this.remoteLevelList = this.remoteLevelList.map(remoteLevel => remoteLevel.id === savedRemoteLevel.id ? savedRemoteLevel : remoteLevel);
-                    this.saveCache();
                     this.render();
                 } catch (error) { console.log("Failed to load data:", error) };
 
@@ -436,12 +448,11 @@ export default class AppController {
                     alert("Please fill all required fields before adding remote level to the list");
                     return;
                 }
-                const newRemoteLevel = await EquipmentService.postData(
+                const newRemoteLevel = await EquipmentService.addRemoteLevel(
                     new RemoteLevel(remoteLevelLocationInput, remoteLevelStatusInput, remoteLevelNoteInput),
                     "remote-level");
 
                 this.remoteLevelList.push(newRemoteLevel);
-                this.saveCache();
                 this.render();
             } catch (error) { console.log("Failed to load data:", error) };
             addLevelForm.reset();
@@ -476,7 +487,6 @@ export default class AppController {
                     const remoteLevelToDelete = this.remoteLevelList.find(level => level.id.toString() === tr.dataset.id);
                     const deletedId = await EquipmentService.deleteRemoteLevel(remoteLevelToDelete.id);
                     this.remoteLevelList = this.remoteLevelList.filter(level => level.id !== deletedId);
-                    this.saveCache();
                     this.render();
                 } catch (error) { console.log("Failed to load data:", error) };
                 this.editRemoteLevelId = null;
@@ -544,29 +554,7 @@ export default class AppController {
     //CACHE HELPER
 
 
-    getCache() {
-        const cached = localStorage.getItem("dashboardData");
-        if (!cached) return null;
-
-        try {
-            return JSON.parse(cached);
-        } catch (error) {
-            console.error("Failed to parse cache:", error);
-            localStorage.removeItem("dashboardData");
-            return null;
-        }
-    }
-
-    saveCache() {
-        localStorage.setItem("dashboardData", JSON.stringify({
-            machineryList: this.machineryList,
-            telehutList: this.telehutList,
-            remoteLevelList: this.remoteLevelList,
-            generalNoteList: this.generalNoteList
-        }));
-    }
-
-    setLists(data) {
+    setLists(data = {}) {
         this.machineryList = data.machineryList || [];
         this.telehutList = data.telehutList || [];
         this.remoteLevelList = data.remoteLevelList || [];

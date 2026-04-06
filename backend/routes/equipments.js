@@ -113,7 +113,6 @@ router.post("/machinery", async (req, res, next) => {
         const savedMachinery = await db.collection("machinery").findOne({
             _id: result.insertedId
         });
-        console.log(formatDocument(savedMachinery));
         res.status(201).json(formatDocument(savedMachinery));
 
     } catch (error) {

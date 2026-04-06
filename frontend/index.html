@@ -24,10 +24,9 @@
       <main class="main">
         <!-- DASHBOARD -->
         <section id="dashboard" class="page-section active">
-          <div class="section-header">
+          <div class="section-header dashboard-header">
             <div>
-              <div id="error-state" class="error-banner inactive"></div>
-              <div id="loading-state" class="loading-card">
+              <div id="loading-state" class="loading-card inactive">
                 <p>Loading dashboard data...</p>
               </div>
               <h1>Dashboard</h1>
@@ -35,6 +34,14 @@
                 Overview of current fleet, telehut and handover activity
               </p>
             </div>
+
+            <button
+              id="reset-data-btn"
+              class="small-btn danger-btn inactive"
+              type="button"
+            >
+              Reset Data
+            </button>
           </div>
 
           <div class="date-card">

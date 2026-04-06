@@ -1,14 +1,17 @@
-
+import ApiService from "./apiService.js";
+import LocalStorageService from "./localStorageService.js";
 
 export default class EquipmentService {
 
     static baseUrl = process.env.API_BASE_URL || "http://localhost:3000";
+    static MUTATION_MODE = process.env.MUTATION_MODE;
 
     // -------------GET DATA--------------\\
 
 
     static async fetchLists() {
 
+        //  await new Promise(resolve => setTimeout(resolve, 4000));
         const [machineryRes, telehutRes, remoteLevelRes, generalNoteRes] = await Promise.all(
             [
                 fetch(`${this.baseUrl}/machinery`),
@@ -29,6 +32,10 @@ export default class EquipmentService {
             generalNoteRes.json()
         ])
 
+        LocalStorageService.set("machinery", machineryList);
+        LocalStorageService.set("telehut", telehutList);
+        LocalStorageService.set("remote-level", remoteLevelList);
+        LocalStorageService.set("general-note", generalNoteList);
 
         return {
             machineryList,
@@ -36,135 +43,130 @@ export default class EquipmentService {
             remoteLevelList,
             generalNoteList
         }
-
     }
 
-    // -------------POST DATA--------------\\
 
+    static async getAllCache() {
+        const generalNoteList = LocalStorageService.get("general-note") || [];
+        const machineryList = LocalStorageService.get("machinery") || [];
+        const telehutList = LocalStorageService.get("telehut") || [];
+        const remoteLevelList = LocalStorageService.get("remote-level") || [];
 
-    static async postData(data, endTailUrl) {
-
-        const res = await fetch(`${this.baseUrl}/${endTailUrl}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        })
-
-        if (!res.ok) {
-            throw new Error("Failed to add data");
+        return {
+            generalNoteList,
+            machineryList,
+            telehutList,
+            remoteLevelList
         };
-
-        const datas = await res.json();
-
-        return datas;
-
     }
 
-    // -------------UPDATE DATA--------------\\
+
+    // -------------GENERAL NOTE--------------\\
 
     static async updateGeneralNote(data, id) {
-
-        const res = await fetch(`${this.baseUrl}/general-note/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
-
-        if (!res.ok) {
-            throw new Error("Failed to fetch data");
-        };
-
-        return await res.json();
+        if (this.MUTATION_MODE === "api") {
+            return await ApiService.updateGeneralNote(data, id);
+        } else {
+            return LocalStorageService.update(data, "general-note");
+        }
     }
 
-    static async updateMachinery(data, id) {
-
-        const res = await fetch(`${this.baseUrl}/machinery/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
-
-        if (!res.ok) {
-            throw new Error("Failed to fetch data");
-        };
-
-        return await res.json();
+    static async addGeneralNote(data, path) {
+        if (this.MUTATION_MODE === "api") {
+            console.log(this.MUTATION_MODE )
+            return ApiService.postData(data, path);
+        } else {
+            return LocalStorageService.add(data, "general-note");
+        }
     }
-
-    static async updateTelehut(data, id) {
-        const res = await fetch(`${this.baseUrl}/telehut/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
-
-        if (!res.ok) {
-            throw new Error("Failed to fetch data");
-        };
-
-        return await res.json();
-    }
-
-    static async updateRemoteLevel(data, id) {
-        const res = await fetch(`${this.baseUrl}/remote-level/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
-
-        if (!res.ok) {
-            throw new Error("Failed to fetch data");
-        };
-
-        return await res.json();
-    }
-
-
-    // -------------DELETE DATA--------------\\
-
 
     static async deleteGeneralNote(id) {
-        const res = await fetch(`${this.baseUrl}/general-note/${id}`, {
-            method: "DELETE",
-        })
-        if (!res.ok) {
-            throw new Error("Failed to delete data");
+        if (this.MUTATION_MODE === "api") {
+            return await ApiService.deleteGeneralNote(id);
+        } else {
+            return LocalStorageService.delete(id, "general-note");
         }
-        return await res.json();
+    }
+
+
+    // -------------MACHINERY--------------\\
+
+    static async updateMachinery(data, id) {
+        if (this.MUTATION_MODE === "api") {
+            return await ApiService.updateMachinery(data, id);
+        } else {
+            return LocalStorageService.update(data, "machinery");
+        }
+    }
+
+    static async addMachinery(data, path) {
+        if (this.MUTATION_MODE === "api") {
+            return await ApiService.postData(data, path);
+        } else {
+            return LocalStorageService.add(data, "machinery");
+        }
     }
 
     static async deleteMachinery(id) {
-        const res = await fetch(`${this.baseUrl}/machinery/${id}`, {
-            method: "DELETE",
-        })
-        if (!res.ok) {
-            throw new Error("Failed to delete data");
+        if (this.MUTATION_MODE === "api") {
+            return await ApiService.deleteMachinery(id);
+        } else {
+            return LocalStorageService.delete(id, "machinery");
         }
-        return await res.json();
+    }
+
+    // -------------TELEHUT--------------\\
+
+    static async updateTelehut(data, id) {
+        if (this.MUTATION_MODE === "api") {
+            return await ApiService.updateTelehut(data, id);
+        } else {
+            return LocalStorageService.update(data, "telehut");
+        }
+    }
+
+    static async addTelehut(data, path) {
+        if (this.MUTATION_MODE === "api") {
+            return await ApiService.postData(data, path);
+        } else {
+            return LocalStorageService.add(data, "telehut");
+        }
     }
 
     static async deleteTelehut(id) {
-        const res = await fetch(`${this.baseUrl}/telehut/${id}`, {
-            method: "DELETE",
-        })
-        if (!res.ok) {
-            throw new Error("Failed to delete data");
+        if (this.MUTATION_MODE === "api") {
+            return await ApiService.deleteTelehut(id);
+        } else {
+            return LocalStorageService.delete(id, "telehut");
         }
+    }
 
-        return await res.json();
+    // -------------REMOTE LEVEL--------------\\
+
+    static async updateRemoteLevel(data, id) {
+        if (this.MUTATION_MODE === "api") {
+            return await ApiService.updateRemoteLevel(data, id);
+        } else {
+            return LocalStorageService.update(data, "remote-level");
+        }
+    }
+
+    static async addRemoteLevel(data, path) {
+        if (this.MUTATION_MODE === "api") {
+            return await ApiService.postData(data, path);
+        } else {
+            return LocalStorageService.add(data, "remote-level");
+        }
     }
 
     static async deleteRemoteLevel(id) {
-        const res = await fetch(`${this.baseUrl}/remote-level/${id}`, {
-            method: "DELETE",
-        })
-        if (!res.ok) {
-            throw new Error("Failed to delete data");
+        if (this.MUTATION_MODE === "api") {
+            return await ApiService.deleteRemoteLevel(id);
+        } else {
+            return LocalStorageService.delete(id, "remote-level");
         }
-
-        return await res.json();
     }
+
 }
 
 

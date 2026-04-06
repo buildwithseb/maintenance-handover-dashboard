@@ -185,10 +185,8 @@ export default class Ui {
 
 
     //LOADING METHODS
-
-
     static showLoading() {
-        const loading = document.getElementById("loading-state inactive");
+        const loading = document.getElementById("loading-state");
         if (loading) {
             loading.classList.remove("inactive");
             console.dir(loading);
@@ -200,20 +198,9 @@ export default class Ui {
         if (loading) loading.classList.add("inactive");
     }
 
-    static showError(message) {
-        const errorBox = document.getElementById("error-state");
-        if (!errorBox) return;
-
-        errorBox.textContent = message;
-        errorBox.classList.remove("inactive");
-    }
-
-    static hideError() {
-        const errorBox = document.getElementById("error-state");
-        if (!errorBox) return;
-
-        errorBox.textContent = "";
-        errorBox.classList.add("inactive");
+    static showButton(buttonId){
+        const button = document.getElementById(`${buttonId}`)
+        button.classList.remove("inactive");
     }
 
 }
