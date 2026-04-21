@@ -4,10 +4,12 @@ import { GeneralNote, Machinery, Telehut, RemoteLevel } from "../models/entities
 import EquipmentService from "../services/equipmentService.js";
 
 export default class AppController {
+    
 
     MUTATION_MODE = process.env.MUTATION_MODE;
 
     constructor() {
+        
         this.machineryList = [];
         this.telehutList = [];
         this.remoteLevelList = [];
@@ -22,14 +24,14 @@ export default class AppController {
     }
 
     async init() {
+
         this.setDomRefs();
         this.bindSideBarEvents();
         this.bindEvents();
 
 
         this.isSeeded = localStorage.getItem("dashboardSeeded") === "true";
-
-        if (!this.isSeeded || this.MUTATION_MODE === "api") {
+        if (!this.isSeeded || this.MUTATION_MODE === "API") {
             Ui.showLoading();
             try {
                 const freshData = await EquipmentService.fetchLists();

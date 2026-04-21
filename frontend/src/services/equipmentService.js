@@ -64,7 +64,7 @@ export default class EquipmentService {
     // -------------GENERAL NOTE--------------\\
 
     static async updateGeneralNote(data, id) {
-        if (this.MUTATION_MODE === "api") {
+        if (this.MUTATION_MODE === "API") {
             return await ApiService.updateGeneralNote(data, id);
         } else {
             return LocalStorageService.update(data, "general-note");
@@ -72,7 +72,7 @@ export default class EquipmentService {
     }
 
     static async addGeneralNote(data, path) {
-        if (this.MUTATION_MODE === "api") {
+        if (this.MUTATION_MODE === "API") {
             console.log(this.MUTATION_MODE )
             return ApiService.postData(data, path);
         } else {
@@ -81,7 +81,7 @@ export default class EquipmentService {
     }
 
     static async deleteGeneralNote(id) {
-        if (this.MUTATION_MODE === "api") {
+        if (this.MUTATION_MODE === "API") {
             return await ApiService.deleteGeneralNote(id);
         } else {
             return LocalStorageService.delete(id, "general-note");
@@ -92,7 +92,7 @@ export default class EquipmentService {
     // -------------MACHINERY--------------\\
 
     static async updateMachinery(data, id) {
-        if (this.MUTATION_MODE === "api") {
+        if (this.MUTATION_MODE === "API") {
             return await ApiService.updateMachinery(data, id);
         } else {
             return LocalStorageService.update(data, "machinery");
@@ -100,7 +100,7 @@ export default class EquipmentService {
     }
 
     static async addMachinery(data, path) {
-        if (this.MUTATION_MODE === "api") {
+        if (this.MUTATION_MODE === "API") {
             return await ApiService.postData(data, path);
         } else {
             return LocalStorageService.add(data, "machinery");
@@ -108,7 +108,7 @@ export default class EquipmentService {
     }
 
     static async deleteMachinery(id) {
-        if (this.MUTATION_MODE === "api") {
+        if (this.MUTATION_MODE === "API") {
             return await ApiService.deleteMachinery(id);
         } else {
             return LocalStorageService.delete(id, "machinery");
@@ -118,7 +118,7 @@ export default class EquipmentService {
     // -------------TELEHUT--------------\\
 
     static async updateTelehut(data, id) {
-        if (this.MUTATION_MODE === "api") {
+        if (this.MUTATION_MODE === "API") {
             return await ApiService.updateTelehut(data, id);
         } else {
             return LocalStorageService.update(data, "telehut");
@@ -126,7 +126,7 @@ export default class EquipmentService {
     }
 
     static async addTelehut(data, path) {
-        if (this.MUTATION_MODE === "api") {
+        if (this.MUTATION_MODE === "API") {
             return await ApiService.postData(data, path);
         } else {
             return LocalStorageService.add(data, "telehut");
@@ -134,7 +134,7 @@ export default class EquipmentService {
     }
 
     static async deleteTelehut(id) {
-        if (this.MUTATION_MODE === "api") {
+        if (this.MUTATION_MODE === "API") {
             return await ApiService.deleteTelehut(id);
         } else {
             return LocalStorageService.delete(id, "telehut");
@@ -144,7 +144,7 @@ export default class EquipmentService {
     // -------------REMOTE LEVEL--------------\\
 
     static async updateRemoteLevel(data, id) {
-        if (this.MUTATION_MODE === "api") {
+        if (this.MUTATION_MODE === "API") {
             return await ApiService.updateRemoteLevel(data, id);
         } else {
             return LocalStorageService.update(data, "remote-level");
@@ -152,7 +152,7 @@ export default class EquipmentService {
     }
 
     static async addRemoteLevel(data, path) {
-        if (this.MUTATION_MODE === "api") {
+        if (this.MUTATION_MODE === "API") {
             return await ApiService.postData(data, path);
         } else {
             return LocalStorageService.add(data, "remote-level");
@@ -160,7 +160,7 @@ export default class EquipmentService {
     }
 
     static async deleteRemoteLevel(id) {
-        if (this.MUTATION_MODE === "api") {
+        if (this.MUTATION_MODE === "API") {
             return await ApiService.deleteRemoteLevel(id);
         } else {
             return LocalStorageService.delete(id, "remote-level");
