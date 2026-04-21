@@ -20,11 +20,11 @@ async function connectDB() {
   return db;
 }
 
-function getDB() {
+function getDb() {
   if (!db) {
     throw new Error("Database not connected");
   }
   return db;
 }
 
-module.exports = { connectDB, getDB };
+module.exports = { connectDB, getDb };
