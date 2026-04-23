@@ -1,9 +1,11 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+
 const adminRoutes = require("./routes/admin.js");
-const trackerRoutes = require("./routes/tracker")
-const { connectDB } = require("./config/db.js");
+const trackerRoutes = require("./routes/tracker");
+const authRoutes = require("./routes/auth")
+const { connectDB } = require("./config/db");
 
 const app = express();
 
@@ -31,6 +33,7 @@ app.use(cors({
 app.use(express.json());
 app.use(adminRoutes);
 app.use(trackerRoutes);
+app.use(authRoutes);
 
 async function startServer() {
   try {
