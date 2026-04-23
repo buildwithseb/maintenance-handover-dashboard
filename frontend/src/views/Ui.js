@@ -176,11 +176,17 @@ export default class Ui {
 
     static showPage(elementId) {
 
+        const sideBarEl = document.getElementById("sidebar");
+        sideBarEl.classList.remove('inactive');
         const pages = document.querySelectorAll(".page-section");
         pages.forEach(page => {
             page.classList.remove("active")
         });
         document.getElementById(elementId).classList.add("active");
+
+        if (elementId === "login" || elementId === "sign-in") {
+            sideBarEl.classList.add('inactive');
+        }
     }
 
 
@@ -189,7 +195,6 @@ export default class Ui {
         const loading = document.getElementById("loading-state");
         if (loading) {
             loading.classList.remove("inactive");
-            console.dir(loading);
         };
     }
 
@@ -198,7 +203,7 @@ export default class Ui {
         if (loading) loading.classList.add("inactive");
     }
 
-    static showButton(buttonId){
+    static showButton(buttonId) {
         const button = document.getElementById(`${buttonId}`)
         button.classList.remove("inactive");
     }

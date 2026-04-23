@@ -2,14 +2,15 @@ import { MACHINERY_STATUS, LEVEL_STATUS, TELEHUT_STATUS } from "../utils/constan
 import Ui from "../views/Ui.js";
 import { GeneralNote, Machinery, Telehut, RemoteLevel } from "../models/entities.js";
 import EquipmentService from "../services/equipmentService.js";
+import AuthService from "../services/auth.js";
 
 export default class AppController {
-    
+
 
     MUTATION_MODE = process.env.MUTATION_MODE;
 
     constructor() {
-        
+
         this.machineryList = [];
         this.telehutList = [];
         this.remoteLevelList = [];
@@ -44,7 +45,7 @@ export default class AppController {
                 Ui.hideLoading();
             }
 
-        } else if (this.MUTATION_MODE === "local"){
+        } else if (this.MUTATION_MODE === "local") {
             const cachedData = await EquipmentService.getAllCache();
             this.setLists(cachedData);
         }
@@ -62,11 +63,52 @@ export default class AppController {
     };
 
     bindEvents() {
+        this.bindLoginEvents();
+        this.bindSignUpEvents();
         this.bindDashboardEvents();
         this.bindMachineryEvents();
         this.bindTelehutEvents();
         this.bindRemoteLevelEvents();
     };
+
+    bindLoginEvents() {
+        const form = document.getElementById('login-form');
+        const returnBtn = document.getElementById('return-login-btn');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault()
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            const result = AuthService.postAuth(data, "login");
+
+        })
+
+        returnBtn.addEventListener('click', () => { 
+            Ui.showPage("dashboard") });
+
+
+    }
+
+    bindSignUpEvents() {
+        const form = document.getElementById('sign-form');
+        const returnBtn = document.getElementById('return-sign-in-btn');
+        const loginLink = document.getElementById('login-link-btn');
+
+        returnBtn.addEventListener('click', () => { Ui.showPage("dashboard") });
+        loginLink.addEventListener('click', ()=>{Ui.showPage("login")});
+        form.addEventListener('submit', (e) => {
+            e.preventDefault()
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            const result = AuthService.postAuth(data, "Sign-up");
+
+        })
+
+
+     }
+
+    
+
 
     bindDashboardEvents() {
 
@@ -78,7 +120,7 @@ export default class AppController {
         const addGeneralNoteBtn = document.querySelector("#general-note button");
         const noteInput = document.querySelector("#general-note input");
 
-        if(this.MUTATION_MODE === "local"){
+        if (this.MUTATION_MODE === "local") {
 
             console.log("test")
             Ui.showButton("reset-data-btn");
