@@ -3,11 +3,13 @@ import Ui from "../views/Ui.js";
 import { GeneralNote, Machinery, Telehut, RemoteLevel } from "../models/entities.js";
 import EquipmentService from "../services/equipmentService.js";
 import AuthService from "../services/auth.js";
+import ApiService from "../services/apiService.js";
 
 export default class AppController {
 
 
     MUTATION_MODE = process.env.MUTATION_MODE;
+    IS_LOGGED_IN;
 
     constructor() {
 
@@ -26,9 +28,15 @@ export default class AppController {
 
     async init() {
 
+        const result = await ApiService.checkAuthStatus('auth/status');
+        if(result.isLoggedIn){
+            this.IS_LOGGED_IN = result.isLoggedIn
+        }
+
         this.setDomRefs();
         this.bindSideBarEvents();
         this.bindEvents();
+
 
 
         this.isSeeded = localStorage.getItem("dashboardSeeded") === "true";
@@ -79,13 +87,17 @@ export default class AppController {
             e.preventDefault()
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
-            const result = await AuthService.postAuth(data, "login");
-            console.log(result)
+            const result = await AuthService.postAuth(data, "auth/login");
+            this.IS_LOGGED_IN = result.isLoggedIn;
+            this.init();
+            Ui.showPage('dashboard');
+
 
         })
 
-        returnBtn.addEventListener('click', () => { 
-            Ui.showPage("dashboard") });
+        returnBtn.addEventListener('click', () => {
+            Ui.showPage("dashboard")
+        });
 
 
     }
@@ -96,18 +108,18 @@ export default class AppController {
         const loginLink = document.getElementById('login-link-btn');
 
         returnBtn.addEventListener('click', () => { Ui.showPage("dashboard") });
-        loginLink.addEventListener('click', ()=>{Ui.showPage("login")});
+        loginLink.addEventListener('click', () => { Ui.showPage("login") });
         form.addEventListener('submit', async (e) => {
             e.preventDefault()
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
-            const result = await AuthService.postAuth(data, "Sign-up");
+            const result = await AuthService.postAuth(data, "auth/Sign-up");
             console.log(result)
             Ui.showPage("login")
         })
-     }
+    }
 
-    
+
 
 
     bindDashboardEvents() {
@@ -245,6 +257,10 @@ export default class AppController {
         const openAddMachineFormBtn = document.getElementById("add-machine-to-fleet-btn");
         const addMachineBtn = document.getElementById("add-machine-btn");
 
+        if (!this.IS_LOGGED_IN) {
+            Ui.hideButton("add-machine-to-fleet-btn");
+        }
+
         openAddMachineFormBtn.addEventListener("click", () => {
             Ui.openForm(addMachineFormElement, openAddMachineFormBtn)
         })
@@ -292,6 +308,9 @@ export default class AppController {
                     machineNameInput, machineTypeInput, machineStatusInput, machineRemoteCapableInput, machineNoteInput),
                     "machinery");
 
+                if (newMachinery.message) {
+                    return console.log(newMachinery.message)
+                }
                 this.machineryList.push(newMachinery);
                 this.render();
             } catch (error) { console.error("Failed to load data:", error) };
@@ -357,8 +376,11 @@ export default class AppController {
         const cancelBtn = document.getElementById("cancel-telehut-form-btn");
         const addTelehutBtn = document.getElementById("save-telehut-btn");
 
-        addTelehutToFleetBtn.addEventListener("click", () => {
+        if (!this.IS_LOGGED_IN) {
+            Ui.hideButton("add-telehut-to-fleet-btn");
+        };
 
+        addTelehutToFleetBtn.addEventListener("click", () => {
             Ui.openForm(addTelehutForm, addTelehutToFleetBtn);
         });
 
@@ -544,15 +566,17 @@ export default class AppController {
 
 
 
+
+
     render() {
         const machineAvailableList = this.machineryList.filter(mach => mach.status === MACHINERY_STATUS.AVAILABLE);
         const machineryBreakdownList = this.machineryList.filter(mach => mach.status === MACHINERY_STATUS.BREAKDOWN);
         const machineInProgressList = this.machineryList.filter(mach => mach.status === MACHINERY_STATUS.IN_PROGRESS);
         Ui.renderDashboard(this.machineryList, machineAvailableList, machineryBreakdownList, machineInProgressList);
-        Ui.renderMachineries(this.machineryList, this.machineryTableBody);
+        Ui.renderMachineries(this.machineryList, this.machineryTableBody, this.IS_LOGGED_IN);
         Ui.renderGeneralNotes(this.generalNoteList, this.generalNoteListElement);
         Ui.renderHandoverGeneralNote(this.generalNoteList);
-        Ui.renderTelehut(this.telehutList, this.telehutTableBody);
+        Ui.renderTelehut(this.telehutList, this.telehutTableBody, this.IS_LOGGED_IN);
 
         const remoteCapableMachineryList = this.machineryList.filter(mach => mach.remoteCapable);
         Ui.renderRemoteCapableMachinery(remoteCapableMachineryList);

@@ -36,8 +36,7 @@ export default class Ui {
 
     }
 
-    static renderMachineries(machineryList, machineryRootList) {
-
+    static renderMachineries(machineryList, machineryRootList, isLoggedIn) {
 
         machineryRootList.innerHTML = "";
         for (const machine of machineryList) {
@@ -52,10 +51,14 @@ export default class Ui {
                   <td>${machine.notes}</td>
                   <td>
                      <button class="small-btn" data-action="edit" >Edit</button>
-                     <button class="small-btn danger-btn" data-action="remove" >Remove</button>
+                     <button id="machinery-delete-btn" class="small-btn danger-btn" data-action="remove" >Remove</button>
                   </td>
-                
         `
+            if (!isLoggedIn) {
+                const deleteBtn = newMachineryEl.querySelector('button:last-of-type');
+                deleteBtn.classList.add('inactive');
+            }
+
             machineryRootList.appendChild(newMachineryEl);
         }
     }
@@ -69,7 +72,7 @@ export default class Ui {
         } else return "yellow";
     }
 
-    static renderTelehut(telehutList, telehutTableBody) {
+    static renderTelehut(telehutList, telehutTableBody, isLoggedIn) {
 
 
         telehutTableBody.innerHTML = "";
@@ -88,6 +91,11 @@ export default class Ui {
                      <button class="small-btn danger-btn" data-action="remove" >Remove</button>
                     </td>
                     `
+
+            if (!isLoggedIn) {
+                const deleteBtn = newTelehutEl.querySelector('button:last-of-type');
+                deleteBtn.classList.add('inactive');
+            }
             telehutTableBody.appendChild(newTelehutEl);
         }
     }
@@ -206,6 +214,11 @@ export default class Ui {
     static showButton(buttonId) {
         const button = document.getElementById(`${buttonId}`)
         button.classList.remove("inactive");
+    }
+
+    static hideButton(buttonId) {
+        const button = document.getElementById(`${buttonId}`)
+        button.classList.add("inactive");
     }
 
 }
