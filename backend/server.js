@@ -1,5 +1,7 @@
 require("dotenv").config();
 const express = require("express");
+const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
 const cors = require("cors");
 
 const adminRoutes = require("./routes/admin.js");
@@ -9,12 +11,28 @@ const { connectDB } = require("./config/db");
 
 const app = express();
 
+const store = new MongoDBStore({
+  uri: process.env.MONGODB_URI,
+  collection: 'sessions'
+});
+
 const port = process.env.PORT || 3000;
 
 const allowedOrigins = [
   "http://localhost:8081",
   "https://maintenance-handover-dashboard.vercel.app"
 ];
+
+app.use(session({
+  secret: 'my secret key',
+  resave: false,
+  saveUninitialized: false,
+  store: store,
+  cookie: {
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60, // 1 hour
+  }
+}));
 
 app.use(cors({
   origin(origin, callback) {
@@ -26,6 +44,7 @@ app.use(cors({
 
     return callback(new Error(`CORS not allowed for origin: ${origin}`));
   },
+  credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type"]
 }));

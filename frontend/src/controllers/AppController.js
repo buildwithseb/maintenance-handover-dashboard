@@ -75,11 +75,12 @@ export default class AppController {
         const form = document.getElementById('login-form');
         const returnBtn = document.getElementById('return-login-btn');
 
-        form.addEventListener('submit', (e) => {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault()
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
-            const result = AuthService.postAuth(data, "login");
+            const result = await AuthService.postAuth(data, "login");
+            console.log(result)
 
         })
 
@@ -96,15 +97,14 @@ export default class AppController {
 
         returnBtn.addEventListener('click', () => { Ui.showPage("dashboard") });
         loginLink.addEventListener('click', ()=>{Ui.showPage("login")});
-        form.addEventListener('submit', (e) => {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault()
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
-            const result = AuthService.postAuth(data, "Sign-up");
-
+            const result = await AuthService.postAuth(data, "Sign-up");
+            console.log(result)
+            Ui.showPage("login")
         })
-
-
      }
 
     
