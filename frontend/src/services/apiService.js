@@ -1,13 +1,14 @@
 export default class ApiService {
 
-     static baseUrl = process.env.API_BASE_URL || "http://localhost:3000";
-     
+    static baseUrl = process.env.API_BASE_URL || "http://localhost:3000";
+
     // -------------POST DATA--------------\\
 
     static async postData(data, path) {
 
         const res = await fetch(`${this.baseUrl}/${path}`, {
             method: "POST",
+            credentials: 'include',
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
         })
