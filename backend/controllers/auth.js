@@ -1,4 +1,5 @@
 const { getDb } = require('../config/db');
+const bcrypt = require('bcrypt');
 
 exports.postLogin = (req, res, next) => {
     req.session.isLoggedIn = true;
@@ -12,7 +13,8 @@ exports.postLogin = (req, res, next) => {
 exports.postSignUp = async (req, res, next) => {
 
     const email = req.body.email;
-    const password = req.body.password;
+
+    const hashedPassword = await bcrypt.hash(req.body.password, 10) ;
     // const confirmPassword = req.body.confirmPassword;
 
     const db = getDb();
@@ -23,7 +25,7 @@ exports.postSignUp = async (req, res, next) => {
     } else {
         await db.collection('user').insertOne({
             email: email,
-            password: password
+            password: hashedPassword
         });
         return res.status(201).json({ message: `New user signed up: ${email}` });
     }
