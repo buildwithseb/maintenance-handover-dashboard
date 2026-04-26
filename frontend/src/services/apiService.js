@@ -2,6 +2,25 @@ export default class ApiService {
 
     static baseUrl = process.env.API_BASE_URL || "http://localhost:3000";
 
+
+    // -------------GET DATA--------------\\
+
+
+    static async checkAuthStatus(path) {
+
+        const res = await fetch(`${this.baseUrl}/${path}`, {
+            credentials: 'include'
+        });
+
+        if (!res.ok) {
+            throw new Error("Failed to get data");
+        }
+
+        return await res.json();
+
+
+    }
+
     // -------------POST DATA--------------\\
 
     static async postData(data, path) {
