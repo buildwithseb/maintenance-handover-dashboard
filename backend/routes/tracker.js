@@ -4,6 +4,7 @@ const trackerControllers = require('../controllers/tracker');
 
 const router = express.Router();
 
+router.get("/csrf-token", trackerControllers.getCsrf);
 
 router.get("/general-note", trackerControllers.getGeneralNote);
 

@@ -2,7 +2,6 @@ import { MACHINERY_STATUS, LEVEL_STATUS, TELEHUT_STATUS } from "../utils/constan
 import Ui from "../views/Ui.js";
 import { GeneralNote, Machinery, Telehut, RemoteLevel } from "../models/entities.js";
 import EquipmentService from "../services/equipmentService.js";
-import AuthService from "../services/auth.js";
 import ApiService from "../services/apiService.js";
 
 export default class AppController {
@@ -33,11 +32,11 @@ export default class AppController {
             this.IS_LOGGED_IN = result.isLoggedIn
         }
 
+        const res = await EquipmentService.getCsrf();
+     
         this.setDomRefs();
         this.bindSideBarEvents();
         this.bindEvents();
-
-
 
         this.isSeeded = localStorage.getItem("dashboardSeeded") === "true";
         if (!this.isSeeded || this.MUTATION_MODE === "API") {
@@ -58,6 +57,8 @@ export default class AppController {
             this.setLists(cachedData);
         }
         this.render();
+
+        
     }
 
 
@@ -89,7 +90,7 @@ export default class AppController {
             e.preventDefault()
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
-            const result = await AuthService.postAuth(data, "auth/login");
+            const result = await EquipmentService.postAuth(data, "auth/login");
             this.IS_LOGGED_IN = result.isLoggedIn;
             this.init();
             Ui.showPage('dashboard');
@@ -113,7 +114,7 @@ export default class AppController {
             e.preventDefault()
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
-            const result = await AuthService.postAuth(data, "auth/Sign-up");
+            const result = await EquipmentService.postAuth(data, "auth/Sign-up");
             Ui.showPage("login")
         })
     }

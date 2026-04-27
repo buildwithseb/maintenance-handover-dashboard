@@ -2,9 +2,7 @@ export default class ApiService {
 
     static baseUrl = process.env.API_BASE_URL || "http://localhost:3000";
 
-
     // -------------GET DATA--------------\\
-
 
     static async checkAuthStatus(path) {
 
@@ -23,12 +21,15 @@ export default class ApiService {
 
     // -------------POST DATA--------------\\
 
-    static async postData(data, path) {
+    static async postData(data, path, csrfToken) {
 
         const res = await fetch(`${this.baseUrl}/${path}`, {
             method: "POST",
             credentials: 'include',
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "CSRF-Token": csrfToken
+            },
             body: JSON.stringify(data)
         })
 
@@ -44,11 +45,15 @@ export default class ApiService {
 
     // -------------UPDATE DATA--------------\\
 
-    static async updateGeneralNote(data, id) {
+    static async updateGeneralNote(data, id, csrfToken) {
 
         const res = await fetch(`${this.baseUrl}/general-note/${id}`, {
+            credentials: 'include',
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "CSRF-Token": csrfToken
+            },
             body: JSON.stringify(data)
         });
 
@@ -59,12 +64,16 @@ export default class ApiService {
         return await res.json();
     }
 
-    static async updateMachinery(data, id) {
+    static async updateMachinery(data, id, csrfToken) {
 
         const res = await fetch(`${this.baseUrl}/machinery/${id}`, {
+            credentials: 'include',
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
+            headers: {
+                "Content-Type": "application/json",
+                "CSRF-Token": csrfToken
+            }
         });
 
         if (!res.ok) {
@@ -74,11 +83,16 @@ export default class ApiService {
         return await res.json();
     }
 
-    static async updateTelehut(data, id) {
+    static async updateTelehut(data, id, csrfToken) {
+
         const res = await fetch(`${this.baseUrl}/telehut/${id}`, {
+            credentials: 'include',
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
+            headers: {
+                "Content-Type": "application/json",
+                "CSRF-Token": csrfToken
+            }
         });
 
         if (!res.ok) {
@@ -88,11 +102,15 @@ export default class ApiService {
         return await res.json();
     }
 
-    static async updateRemoteLevel(data, id) {
+    static async updateRemoteLevel(data, id, csrfToken) {
         const res = await fetch(`${this.baseUrl}/remote-level/${id}`, {
+            credentials: 'include',
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
+            headers: {
+                "Content-Type": "application/json",
+                "CSRF-Token": csrfToken
+            }
         });
 
         if (!res.ok) {
@@ -106,19 +124,30 @@ export default class ApiService {
     // -------------DELETE DATA--------------\\
 
 
-    static async deleteGeneralNote(id) {
+    static async deleteGeneralNote(id, csrfToken) {
         const res = await fetch(`${this.baseUrl}/general-note/${id}`, {
+            credentials: 'include',
             method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "CSRF-Token": csrfToken
+            }
         })
+
         if (!res.ok) {
             throw new Error("Failed to delete data");
         }
         return await res.json();
     }
 
-    static async deleteMachinery(id) {
+    static async deleteMachinery(id, csrfToken) {
         const res = await fetch(`${this.baseUrl}/machinery/${id}`, {
+            credentials: 'include',
             method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "CSRF-Token": csrfToken
+            }
         })
         if (!res.ok) {
             throw new Error("Failed to delete data");
@@ -126,9 +155,14 @@ export default class ApiService {
         return await res.json();
     }
 
-    static async deleteTelehut(id) {
+    static async deleteTelehut(id, csrfToken) {
         const res = await fetch(`${this.baseUrl}/telehut/${id}`, {
+            credentials: 'include',
             method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "CSRF-Token": csrfToken
+            }
         })
         if (!res.ok) {
             throw new Error("Failed to delete data");
@@ -137,10 +171,16 @@ export default class ApiService {
         return await res.json();
     }
 
-    static async deleteRemoteLevel(id) {
+    static async deleteRemoteLevel(id, csrfToken) {
         const res = await fetch(`${this.baseUrl}/remote-level/${id}`, {
+            credentials: 'include',
             method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "CSRF-Token": csrfToken
+            }
         })
+
         if (!res.ok) {
             throw new Error("Failed to delete data");
         }

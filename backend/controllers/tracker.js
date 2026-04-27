@@ -3,6 +3,12 @@ const formatDocument = require('../util/format-document');
 
 const { ObjectId } = require("mongodb");
 
+exports.getCsrf = async (req, res) => {
+    return res.json({
+        csrfToken: req.csrfToken()
+    });
+}
+
 exports.getGeneralNote = async (req, res, next) => {
 
     try {

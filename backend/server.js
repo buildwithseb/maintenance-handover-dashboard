@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const session = require('express-session');
+const csrf = require("csurf");
 const MongoDBStore = require('connect-mongodb-session')(session);
 const cors = require("cors");
 
@@ -22,6 +23,8 @@ const allowedOrigins = [
   "http://localhost:8081",
   "https://maintenance-handover-dashboard.vercel.app"
 ];
+
+const csrfProtection = csrf();
 
 app.use(session({
   secret: 'my secret key',
@@ -46,9 +49,10 @@ app.use(cors({
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type"]
+  allowedHeaders: ["Content-Type","CSRF-Token"]
 }));
 
+app.use(csrfProtection);
 app.use(express.json());
 app.use(adminRoutes);
 app.use(trackerRoutes);

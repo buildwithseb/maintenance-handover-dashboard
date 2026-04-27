@@ -5,9 +5,26 @@ export default class EquipmentService {
 
     static baseUrl = process.env.API_BASE_URL || "http://localhost:3000";
     static MUTATION_MODE = process.env.MUTATION_MODE;
+    static CSRF_TOKEN;
 
     // -------------GET DATA--------------\\
 
+    static async getCsrf() {
+        const res = await fetch(`${this.baseUrl}/csrf-token`, {
+            credentials: "include"
+        });
+        if (!res.ok) {
+            throw new Error("Failed to get CSRF token");
+        }
+
+        const { csrfToken } = await res.json();
+        
+        this.CSRF_TOKEN = csrfToken;
+    }
+
+     static async postAuth(data, path) {
+         return await ApiService.postData(data, path, this.CSRF_TOKEN);
+    }
 
     static async fetchLists() {
 
@@ -65,7 +82,7 @@ export default class EquipmentService {
 
     static async updateGeneralNote(data, id) {
         if (this.MUTATION_MODE === "API") {
-            return await ApiService.updateGeneralNote(data, id);
+            return await ApiService.updateGeneralNote(data, id, this.CSRF_TOKEN);
         } else {
             return LocalStorageService.update(data, "general-note");
         }
@@ -73,8 +90,8 @@ export default class EquipmentService {
 
     static async addGeneralNote(data, path) {
         if (this.MUTATION_MODE === "API") {
-            console.log(this.MUTATION_MODE )
-            return ApiService.postData(data, path);
+            console.log(this.MUTATION_MODE)
+            return ApiService.postData(data, path, this.CSRF_TOKEN);
         } else {
             return LocalStorageService.add(data, "general-note");
         }
@@ -82,7 +99,7 @@ export default class EquipmentService {
 
     static async deleteGeneralNote(id) {
         if (this.MUTATION_MODE === "API") {
-            return await ApiService.deleteGeneralNote(id);
+            return await ApiService.deleteGeneralNote(id, this.CSRF_TOKEN);
         } else {
             return LocalStorageService.delete(id, "general-note");
         }
@@ -93,7 +110,7 @@ export default class EquipmentService {
 
     static async updateMachinery(data, id) {
         if (this.MUTATION_MODE === "API") {
-            return await ApiService.updateMachinery(data, id);
+            return await ApiService.updateMachinery(data, id, this.CSRF_TOKEN);
         } else {
             return LocalStorageService.update(data, "machinery");
         }
@@ -101,7 +118,7 @@ export default class EquipmentService {
 
     static async addMachinery(data, path) {
         if (this.MUTATION_MODE === "API") {
-            return await ApiService.postData(data, path);
+            return await ApiService.postData(data, path, this.CSRF_TOKEN);
         } else {
             return LocalStorageService.add(data, "machinery");
         }
@@ -109,7 +126,7 @@ export default class EquipmentService {
 
     static async deleteMachinery(id) {
         if (this.MUTATION_MODE === "API") {
-            return await ApiService.deleteMachinery(id);
+            return await ApiService.deleteMachinery(id, this.CSRF_TOKEN);
         } else {
             return LocalStorageService.delete(id, "machinery");
         }
@@ -119,7 +136,7 @@ export default class EquipmentService {
 
     static async updateTelehut(data, id) {
         if (this.MUTATION_MODE === "API") {
-            return await ApiService.updateTelehut(data, id);
+            return await ApiService.updateTelehut(data, id, this.CSRF_TOKEN);
         } else {
             return LocalStorageService.update(data, "telehut");
         }
@@ -127,7 +144,7 @@ export default class EquipmentService {
 
     static async addTelehut(data, path) {
         if (this.MUTATION_MODE === "API") {
-            return await ApiService.postData(data, path);
+            return await ApiService.postData(data, path, this.CSRF_TOKEN);
         } else {
             return LocalStorageService.add(data, "telehut");
         }
@@ -135,7 +152,7 @@ export default class EquipmentService {
 
     static async deleteTelehut(id) {
         if (this.MUTATION_MODE === "API") {
-            return await ApiService.deleteTelehut(id);
+            return await ApiService.deleteTelehut(id, this.CSRF_TOKEN);
         } else {
             return LocalStorageService.delete(id, "telehut");
         }
@@ -145,7 +162,7 @@ export default class EquipmentService {
 
     static async updateRemoteLevel(data, id) {
         if (this.MUTATION_MODE === "API") {
-            return await ApiService.updateRemoteLevel(data, id);
+            return await ApiService.updateRemoteLevel(data, id, this.CSRF_TOKEN);
         } else {
             return LocalStorageService.update(data, "remote-level");
         }
@@ -153,7 +170,7 @@ export default class EquipmentService {
 
     static async addRemoteLevel(data, path) {
         if (this.MUTATION_MODE === "API") {
-            return await ApiService.postData(data, path);
+            return await ApiService.postData(data, path, this.CSRF_TOKEN);
         } else {
             return LocalStorageService.add(data, "remote-level");
         }
@@ -161,7 +178,7 @@ export default class EquipmentService {
 
     static async deleteRemoteLevel(id) {
         if (this.MUTATION_MODE === "API") {
-            return await ApiService.deleteRemoteLevel(id);
+            return await ApiService.deleteRemoteLevel(id, this.CSRF_TOKEN);
         } else {
             return LocalStorageService.delete(id, "remote-level");
         }
