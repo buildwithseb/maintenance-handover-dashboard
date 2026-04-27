@@ -61,3 +61,10 @@ exports.postSignUp = async (req, res, next) => {
         return res.status(201).json({ message: `New user signed up: ${email}` });
     }
 }
+
+exports.postLogout = (req,res,next)=>{
+    req.session.destroy(()=>{
+        res.clearCookie('connect.sid');
+        res.json({message: 'Logged out'});
+    });
+}

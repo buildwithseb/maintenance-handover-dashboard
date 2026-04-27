@@ -29,7 +29,7 @@ export default class AppController {
     async init() {
 
         const result = await ApiService.checkAuthStatus('auth/status');
-        if(result.isLoggedIn){
+        if (result.isLoggedIn) {
             this.IS_LOGGED_IN = result.isLoggedIn
         }
 
@@ -71,8 +71,10 @@ export default class AppController {
     };
 
     bindEvents() {
+
         this.bindLoginEvents();
         this.bindSignUpEvents();
+        this.bindLogout();
         this.bindDashboardEvents();
         this.bindMachineryEvents();
         this.bindTelehutEvents();
@@ -98,8 +100,6 @@ export default class AppController {
         returnBtn.addEventListener('click', () => {
             Ui.showPage("dashboard")
         });
-
-
     }
 
     bindSignUpEvents() {
@@ -114,12 +114,20 @@ export default class AppController {
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
             const result = await AuthService.postAuth(data, "auth/Sign-up");
-            console.log(result)
             Ui.showPage("login")
         })
     }
 
+    bindLogout() {
+        const logoutBtn = document.getElementById('login-out-btn');
 
+        logoutBtn.addEventListener('click', async () => {
+            const result = await ApiService.postData({}, "auth/logout");
+            this.IS_LOGGED_IN = result.isLoggedIn;
+            this.init();
+            Ui.showPage('dashboard');
+        })
+    }
 
 
     bindDashboardEvents() {
@@ -257,9 +265,12 @@ export default class AppController {
         const openAddMachineFormBtn = document.getElementById("add-machine-to-fleet-btn");
         const addMachineBtn = document.getElementById("add-machine-btn");
 
+
         if (!this.IS_LOGGED_IN) {
             Ui.hideButton("add-machine-to-fleet-btn");
-        }
+        } else {
+            Ui.showButton("add-machine-to-fleet-btn");
+        };
 
         openAddMachineFormBtn.addEventListener("click", () => {
             Ui.openForm(addMachineFormElement, openAddMachineFormBtn)
