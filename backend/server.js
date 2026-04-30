@@ -11,20 +11,17 @@ const authRoutes = require("./routes/auth")
 const { connectDB } = require("./config/db");
 
 const app = express();
-
+const csrfProtection = csrf();
 const store = new MongoDBStore({
   uri: process.env.MONGODB_URI,
   collection: 'sessions'
 });
-
 const port = process.env.PORT || 3000;
-
 const allowedOrigins = [
   "http://localhost:8081",
   "https://maintenance-handover-dashboard.vercel.app"
 ];
 
-const csrfProtection = csrf();
 
 app.use(session({
   secret: 'my secret key',
@@ -36,11 +33,9 @@ app.use(session({
     maxAge: 1000 * 60 * 60, // 1 hour
   }
 }));
-
 app.use(cors({
   origin(origin, callback) {
     if (!origin) return callback(null, true);
-
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
@@ -51,7 +46,6 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type","CSRF-Token"]
 }));
-
 app.use(csrfProtection);
 app.use(express.json());
 app.use(adminRoutes);
