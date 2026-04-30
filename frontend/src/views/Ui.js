@@ -38,6 +38,12 @@ export default class Ui {
 
     static renderMachineries(machineryList, machineryRootList, isLoggedIn) {
 
+        if (!isLoggedIn) {
+            this.hideButton("add-machine-to-fleet-btn");
+        } else {
+            this.showButton("add-machine-to-fleet-btn");
+        };
+
         machineryRootList.innerHTML = "";
         for (const machine of machineryList) {
             const badgeClass = this.getBadgeClassColor(machine.status);
@@ -54,8 +60,11 @@ export default class Ui {
                      <button id="machinery-delete-btn" class="small-btn danger-btn" data-action="remove" >Remove</button>
                   </td>
         `
-            if (!isLoggedIn) {
-                const deleteBtn = newMachineryEl.querySelector('button:last-of-type');
+
+            const deleteBtn = newMachineryEl.querySelector('button:last-of-type');
+            if (!!isLoggedIn) {
+                deleteBtn.classList.remove('inactive');
+            } else {
                 deleteBtn.classList.add('inactive');
             }
 
@@ -74,6 +83,11 @@ export default class Ui {
 
     static renderTelehut(telehutList, telehutTableBody, isLoggedIn) {
 
+        if (!isLoggedIn) {
+            this.hideButton("add-telehut-to-fleet-btn");
+        } else {
+            this.showButton("add-telehut-to-fleet-btn");
+        };
 
         telehutTableBody.innerHTML = "";
 

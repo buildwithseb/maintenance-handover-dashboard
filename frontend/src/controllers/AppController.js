@@ -8,7 +8,7 @@ export default class AppController {
 
 
     MUTATION_MODE = process.env.MUTATION_MODE;
-    IS_LOGGED_IN;
+    IS_LOGGED_IN = false;
 
     constructor() {
 
@@ -27,13 +27,9 @@ export default class AppController {
 
     async init() {
 
-        const result = await ApiService.checkAuthStatus('auth/status');
-        if (result.isLoggedIn) {
-            this.IS_LOGGED_IN = result.isLoggedIn
-        }
+        await EquipmentService.getCsrf();
 
-        const res = await EquipmentService.getCsrf();
-     
+        this.refreshAuth();
         this.setDomRefs();
         this.bindSideBarEvents();
         this.bindEvents();
@@ -58,7 +54,7 @@ export default class AppController {
         }
         this.render();
 
-        
+
     }
 
 
@@ -90,9 +86,9 @@ export default class AppController {
             e.preventDefault()
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
-            const result = await EquipmentService.postAuth(data, "auth/login");
-            this.IS_LOGGED_IN = result.isLoggedIn;
-            this.init();
+            await EquipmentService.postAuth(data, "auth/login");
+            this.IS_LOGGED_IN = true;
+            this.render();
             Ui.showPage('dashboard');
 
 
@@ -114,7 +110,7 @@ export default class AppController {
             e.preventDefault()
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
-            const result = await EquipmentService.postAuth(data, "auth/sign-up");
+            await EquipmentService.postAuth(data, "auth/sign-up");
             Ui.showPage("login")
         })
     }
@@ -142,8 +138,6 @@ export default class AppController {
         const noteInput = document.querySelector("#general-note input");
 
         if (this.MUTATION_MODE === "local") {
-
-            console.log("test")
             Ui.showButton("reset-data-btn");
         }
 
@@ -266,13 +260,6 @@ export default class AppController {
         const openAddMachineFormBtn = document.getElementById("add-machine-to-fleet-btn");
         const addMachineBtn = document.getElementById("add-machine-btn");
 
-
-        if (!this.IS_LOGGED_IN) {
-            Ui.hideButton("add-machine-to-fleet-btn");
-        } else {
-            Ui.showButton("add-machine-to-fleet-btn");
-        };
-
         openAddMachineFormBtn.addEventListener("click", () => {
             Ui.openForm(addMachineFormElement, openAddMachineFormBtn)
         })
@@ -387,10 +374,6 @@ export default class AppController {
         const addTelehutToFleetBtn = document.getElementById("add-telehut-to-fleet-btn");
         const cancelBtn = document.getElementById("cancel-telehut-form-btn");
         const addTelehutBtn = document.getElementById("save-telehut-btn");
-
-        if (!this.IS_LOGGED_IN) {
-            Ui.hideButton("add-telehut-to-fleet-btn");
-        };
 
         addTelehutToFleetBtn.addEventListener("click", () => {
             Ui.openForm(addTelehutForm, addTelehutToFleetBtn);
@@ -577,7 +560,12 @@ export default class AppController {
     }
 
 
-
+    async refreshAuth() {
+        const result = await ApiService.checkAuthStatus('auth/status');
+        this.IS_LOGGED_IN = !!result.isLoggedIn;
+        console.log("refreshAuth:", this.IS_LOGGED_IN)
+        this.render();
+    }
 
 
     render() {
