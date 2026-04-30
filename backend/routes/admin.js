@@ -14,9 +14,9 @@ router.post("/machinery", isAuth, adminControllers.postAddMachinery);
 
 router.post("/telehut", isAuth, adminControllers.postAddTelehut);
 
-router.put("/machinery/:id", adminControllers.updateMachinery);
+router.put("/machinery/:id", isAuth,adminControllers.updateMachinery);
 
-router.put("/telehut/:id", adminControllers.updateTelehut);
+router.put("/telehut/:id", isAuth, adminControllers.updateTelehut);
 
 router.delete("/machinery/:id", isAuth, adminControllers.deleteMachinery);
 
