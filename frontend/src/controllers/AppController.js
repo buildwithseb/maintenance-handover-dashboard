@@ -114,7 +114,7 @@ export default class AppController {
             e.preventDefault()
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
-            const result = await EquipmentService.postAuth(data, "auth/Sign-up");
+            const result = await EquipmentService.postAuth(data, "auth/sign-up");
             Ui.showPage("login")
         })
     }
