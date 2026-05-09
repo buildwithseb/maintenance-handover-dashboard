@@ -87,9 +87,7 @@ export default class AppController {
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
             await EquipmentService.postAuth(data, "auth/login");
-            this.IS_LOGGED_IN = true;
-            this.render();
-            Ui.showPage('dashboard');
+            this.refreshAuth();
 
 
         })
@@ -117,12 +115,14 @@ export default class AppController {
 
     bindLogout() {
         const logoutBtn = document.getElementById('login-out-btn');
+        const data = { user: "test" }
 
         logoutBtn.addEventListener('click', async () => {
-            const result = await ApiService.postData({}, "auth/logout");
+            const result = await EquipmentService.postAuth(data, "auth/logout");
             this.IS_LOGGED_IN = result.isLoggedIn;
-            this.init();
-            Ui.showPage('dashboard');
+             await EquipmentService.getCsrf();
+            console.log(result);
+            this.refreshAuth();
         })
     }
 
@@ -563,6 +563,7 @@ export default class AppController {
     async refreshAuth() {
         const result = await ApiService.checkAuthStatus('auth/status');
         this.IS_LOGGED_IN = !!result.isLoggedIn;
+         Ui.showPage('dashboard');
         console.log("refreshAuth:", this.IS_LOGGED_IN)
         this.render();
     }
