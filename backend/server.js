@@ -11,7 +11,6 @@ const authRoutes = require("./routes/auth")
 const { connectDB } = require("./config/db");
 
 const app = express();
-const csrfProtection = csrf();
 const store = new MongoDBStore({
   uri: process.env.MONGODB_URI,
   collection: 'sessions'
@@ -22,20 +21,13 @@ const allowedOrigins = [
   "https://maintenance-handover-dashboard.vercel.app"
 ];
 
+const isProduction = process.env.NODE_ENV === "production";
 
-app.use(session({
-  secret: 'my secret key',
-  resave: false,
-  saveUninitialized: false,
-  store: store,
-  cookie: {
-    httpOnly: true,
-    maxAge: 1000 * 60 * 60, // 1 hour
-  }
-}));
 app.use(cors({
   origin(origin, callback) {
+
     if (!origin) return callback(null, true);
+
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
@@ -44,10 +36,26 @@ app.use(cors({
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type","CSRF-Token"]
+  allowedHeaders: ["Content-Type", "CSRF-Token"]
 }));
-app.use(csrfProtection);
+
 app.use(express.json());
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || "my secret key",
+  resave: false,
+  saveUninitialized: false,
+  store: store,
+  cookie: {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction? "none" : "lax",
+    maxAge: 1000 * 60 * 60
+  }
+
+}));
+
+app.use(csrf());
 app.use(adminRoutes);
 app.use(trackerRoutes);
 app.use(authRoutes);

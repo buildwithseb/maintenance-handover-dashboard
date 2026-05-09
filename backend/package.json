@@ -13,6 +13,7 @@
     "bcrypt": "^6.0.0",
     "connect-mongodb-session": "^5.0.0",
     "cors": "^2.8.6",
+    "csurf": "^1.11.0",
     "dotenv": "^17.3.1",
     "ejs": "^5.0.1",
     "express": "^5.2.1",
