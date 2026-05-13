@@ -87,6 +87,7 @@ export default class AppController {
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
             await EquipmentService.postAuth(data, "auth/login");
+            await EquipmentService.getCsrf();
             await this.refreshAuth();
             this.render();
             Ui.showPage("dashboard");
@@ -111,6 +112,7 @@ export default class AppController {
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
             await EquipmentService.postAuth(data, "auth/sign-up");
+            await EquipmentService.getCsrf();
             Ui.showPage("login")
         })
     }
