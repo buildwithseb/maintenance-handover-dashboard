@@ -18,12 +18,12 @@ export default class EquipmentService {
         }
 
         const { csrfToken } = await res.json();
-        
+
         this.CSRF_TOKEN = csrfToken;
     }
 
-     static async postAuth(data, path) {
-         return await ApiService.postData(data, path, this.CSRF_TOKEN);
+    static async postAuth(data, path) {
+        return await ApiService.postData(data, path, this.CSRF_TOKEN);
     }
 
     static async fetchLists() {
@@ -31,10 +31,10 @@ export default class EquipmentService {
         //  await new Promise(resolve => setTimeout(resolve, 4000));
         const [machineryRes, telehutRes, remoteLevelRes, generalNoteRes] = await Promise.all(
             [
-                fetch(`${this.baseUrl}/machinery`),
-                fetch(`${this.baseUrl}/telehut`),
-                fetch(`${this.baseUrl}/remote-level`),
-                fetch(`${this.baseUrl}/general-note`)
+                fetch(`${this.baseUrl}/machinery`, { credentials: "include" }),
+                fetch(`${this.baseUrl}/telehut`, { credentials: "include" }),
+                fetch(`${this.baseUrl}/remote-level`, { credentials: "include" }),
+                fetch(`${this.baseUrl}/general-note`, { credentials: "include" })
             ]
         )
 
