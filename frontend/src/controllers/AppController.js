@@ -28,8 +28,8 @@ export default class AppController {
     async init() {
 
         await EquipmentService.getCsrf();
+        await this.refreshAuth();
 
-        this.refreshAuth();
         this.setDomRefs();
         this.bindSideBarEvents();
         this.bindEvents();
@@ -88,6 +88,7 @@ export default class AppController {
             const data = Object.fromEntries(formData.entries());
             await EquipmentService.postAuth(data, "auth/login");
             this.refreshAuth();
+            Ui.showPage('dashboard');
 
 
         })
@@ -123,6 +124,7 @@ export default class AppController {
              await EquipmentService.getCsrf();
             console.log(result);
             this.refreshAuth();
+            Ui.showPage('dashboard');
         })
     }
 
@@ -563,7 +565,6 @@ export default class AppController {
     async refreshAuth() {
         const result = await ApiService.checkAuthStatus('auth/status');
         this.IS_LOGGED_IN = !!result.isLoggedIn;
-         Ui.showPage('dashboard');
         console.log("refreshAuth:", this.IS_LOGGED_IN)
         this.render();
     }
