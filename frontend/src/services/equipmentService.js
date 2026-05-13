@@ -22,7 +22,7 @@ export default class EquipmentService {
         this.CSRF_TOKEN = csrfToken;
     }
 
-    static async postAuth(data, path) {
+    static async postWithCsrf(data, path) {
         return await ApiService.postData(data, path, this.CSRF_TOKEN);
     }
 

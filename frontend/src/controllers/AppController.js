@@ -86,7 +86,7 @@ export default class AppController {
             e.preventDefault()
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
-            await EquipmentService.postAuth(data, "auth/login");
+            await EquipmentService.postWithCsrf(data, "auth/login");
             await EquipmentService.getCsrf();
             await this.refreshAuth();
             this.render();
@@ -111,7 +111,7 @@ export default class AppController {
             e.preventDefault()
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
-            await EquipmentService.postAuth(data, "auth/sign-up");
+            await EquipmentService.postWithCsrf(data, "auth/sign-up");
             await EquipmentService.getCsrf();
             Ui.showPage("login")
         })
@@ -122,7 +122,7 @@ export default class AppController {
         const data = { user: "test" }
 
         logoutBtn.addEventListener('click', async () => {
-            const result = await EquipmentService.postAuth(data, "auth/logout");
+            const result = await EquipmentService.postWithCsrf(data, "auth/logout");
             this.IS_LOGGED_IN = result.isLoggedIn;
             await EquipmentService.getCsrf();
             console.log(result);
