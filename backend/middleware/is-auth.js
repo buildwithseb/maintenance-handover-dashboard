@@ -1,6 +1,7 @@
 module.exports = (req, res, next) => {
     if (!req.session.isLoggedIn) {
-        return res.json({ isLoggedIn: "User not logged in" })
+        return res.status(401).json({ 
+            message:"Not authenticated" })
     }
     next()
 }
