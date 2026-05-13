@@ -20,7 +20,6 @@ const allowedOrigins = [
   "http://localhost:8081",
   "https://maintenance-handover-dashboard.vercel.app"
 ];
-
 const isProduction = process.env.NODE_ENV === "production";
 
 app.use(cors({
@@ -42,7 +41,7 @@ app.use(cors({
 app.use(express.json());
 
 app.use(session({
-  secret: process.env.SESSION_SECRET || "my secret key",
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   store: store,
