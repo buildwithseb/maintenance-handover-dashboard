@@ -1,5 +1,6 @@
 const { getDb } = require('../config/db');
 const bcrypt = require('bcrypt');
+const emailService = require('../services/emailService');
 
 
 exports.getStatus = (req, res, next) => {
@@ -43,6 +44,7 @@ exports.postLogin = async (req, res, next) => {
 
 exports.postSignUp = async (req, res, next) => {
 
+
     const email = req.body.email;
 
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -58,13 +60,20 @@ exports.postSignUp = async (req, res, next) => {
             email: email,
             password: hashedPassword
         });
+        try {
+            await emailService.sendMail(
+                email, 'Sign-up Succeeded!', 'You successfully signed up!');
+
+        } catch (error) { 
+            console.log(error.response?.body || error) }
+            
         return res.status(201).json({ message: `New user signed up: ${email}` });
     }
 }
 
-exports.postLogout = (req,res,next)=>{
-    req.session.destroy(()=>{
+exports.postLogout = (req, res, next) => {
+    req.session.destroy(() => {
         res.clearCookie('connect.sid');
-        res.json({message: 'Logged out'});
+        res.json({ message: 'Logged out' });
     });
 }
