@@ -141,46 +141,67 @@ This setup makes it easy to develop quickly without depending on the backend, wh
 
 ## Run Locally
 
+### 1. Clone the Repository
+
 ```bash
 git clone https://github.com/buildwithseb/maintenance-handover-dashboard.git
 cd maintenance-handover-dashboard
 ```
 
+<br>
 
-#### Backend
+### 2. Set Up the Backend
 
 ```bash
 cd backend
 npm install
 cp .env.example .env
+```
+
+Configure the `.env` file:
+
+```env
+MONGODB_URI=your_mongodb_connection_string
+DB_NAME=your_database_name
+PORT=3000
+FRONTEND_URL=http://localhost:8081
+```
+
+> This project uses MongoDB Atlas. You will need a MongoDB Atlas cluster, database user, and connection string.
+
+Start the backend:
+
+```bash
 npm start
 ```
 
-#### Frontend
+The API will run at `http://localhost:3000`
+
+<br>
+
+### 3. Set Up the Frontend
+
+Open a new terminal from the project root:
 
 ```bash
 cd frontend
 npm install
 cp .env.example .env
+```
+
+Configure the frontend `.env` file:
+
+```env
+API_BASE_URL=http://localhost:3000
+```
+
+Start the frontend:
+
+```bash
 npm run dev
 ```
 
-### Environment Variables
-
-#### Backend
-
-```bash
-MONGODB_URI=your_connection_string
-DB_NAME=your_db_name
-PORT=3000
-FRONTEND_URL=http://localhost:8081
-```
-
-#### Frontend
-
-```bash
-API_BASE_URL=http://localhost:3000
-```
+The application will run at `http://localhost:8081`.
 
 <br>
 
