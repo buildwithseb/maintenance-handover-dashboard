@@ -1,92 +1,132 @@
 # Maintenance Handover Tracker
 
-A full-stack maintenance handover application to manage machinery, telehuts, remote levels, and shift notes — all in one place.
+<br>
 
-It provides a clear dashboard view and automatically generates a structured handover log for incoming crews.
+A full-stack web application designed around real-world mining maintenance and shift-handover workflows.
 
----
+The application allows crews to track machinery status, telehuts, remote levels and outstanding issues, then automatically generates a structured handover log for the incoming shift.
+
+<br>
 
 ## Live Demo
 
 - **Frontend:** https://maintenance-handover-dashboard.vercel.app/
 - **Backend:** https://maintenance-handover-dashboard.onrender.com/
 
----
+<br>
 
 ## Overview
 
-This application simplifies shift handovers by keeping operational data organized and visible.
+Maintenance Handover Tracker was developed to make shift handovers easier and more organised.
+Instead of writing handover notes in a text editor, users can manage equipment status and important information from one central dashboard.
+The application uses a separate frontend and backend connected through a REST API, with MongoDB Atlas used for data storage.
 
-Users can:
-- Manage machinery and equipment status
-- Track telehut operations
-- Monitor remote levels
-- Add notes for the next crew
-- Generate a handover log automatically
+<br>
 
-The app uses a **separated frontend/backend architecture** with MongoDB as the database.
+## Application Preview
 
----
+<br>
+
+### Dashboard
+
+<br>
+
+<p align="center">
+  <img src="docs/screenshots/dashboard.png"
+       alt="Maintenance Handover Dashboard"
+       width="850">
+  <br>
+  <em>Provides an overview of equipment status and outstanding maintenance information.</em>
+</p>
+
+<br>
+
+### Equipment & Operations
+
+<br>
+
+<p align="center">
+  <img src="docs/screenshots/machinery.png"
+       alt="Machinery Management"
+       width="48%">
+  <img src="docs/screenshots/teleremote.png"
+       alt="Teleremote Management"
+       width="48%">
+	<br>
+	   <em>Manage machinery, telehuts and remote operating areas from dedicated views.</em>
+</p>
+
+<br>
+
+### Handover Log
+
+<p align="center">
+  <img src="docs/screenshots/handoverLog.png"
+       alt="Generated Handover Log"
+       width="850">
+	   <br>
+		<em>Automatically generates a structured handover from equipment and operational items requiring attention.</em>
+</p>
 
 ## Features
 
-- Full CRUD for:
-  - Machinery
-  - Telehuts
-  - Remote Levels
-  - General Notes
-
-- Status tracking:
-  - Machinery → `available`, `in_progress`, `breakdown`
-  - Telehuts → `running`, `standby`, `down`
-  - Remote Levels → `active`, `inactive`, `in_progress`
-
-- Dashboard with real-time stats
+- Dashboard displaying operational and equipment statistics
+- Full CRUD functionality for machinery, telehuts, remote levels and general notes
+- Equipment and operational status tracking
 - Automatic handover log generation
 - Editable handover period
 - Remote-capable machinery view
 
----
+<br>
 
 ## Tech Stack
 
 **Frontend**
+
 - JavaScript (ES Modules)
-- HTML / CSS
+- HTML5 / CSS3
 - Webpack
 
 **Backend**
+
 - Node.js
 - Express
 
 **Database**
+
 - MongoDB Atlas
 
 **Deployment**
+
 - Vercel (Frontend)
 - Render (Backend)
 
----
+<br>
 
-## How It Works
+## System Architecture
 
-- **Dashboard** → Displays key stats and allows adding notes  
-- **Machineries** → Manage equipment and their status  
-- **Teleremote** → Manage telehuts and remote levels  
-- **Handover Log** → Automatically built from non-ideal statuses  
+The application uses a separate frontend and backend connected through a **REST API**. The frontend follows a modular structure using **controllers, services, and models** to separate UI logic, API communication, and application data.
 
----
+<br>
+
+<p align="center">
+  <img src="docs/diagrams/system-architecture.svg" 
+       alt="Maintenance Handover System Architecture" 
+       width="550">
+</p>
+
+<br>
 
 ## API Endpoints
 
-| Method | Endpoint |
-|--------|---------|
+| Method | Endpoint                                           |
+| ------ | -------------------------------------------------- |
 | GET    | /machinery, /telehut, /remote-level, /general-note |
 | POST   | /machinery, /telehut, /remote-level, /general-note |
-| PUT    | /:resource/:id |
-| DELETE | /:resource/:id |
+| PUT    | /:resource/:id                                     |
+| DELETE | /:resource/:id                                     |
 
----
+<br>
 
 ## Data Mode
 
@@ -97,21 +137,17 @@ The frontend supports two persistence modes:
 
 This setup makes it easy to develop quickly without depending on the backend, while still supporting the full production stack.
 
+<br>
 
-
-
----
-
-## 🧪 Run Locally
+## Run Locally
 
 ```bash
 git clone https://github.com/buildwithseb/maintenance-handover-dashboard.git
 cd maintenance-handover-dashboard
 ```
 
----
 
-## Backend
+#### Backend
 
 ```bash
 cd backend
@@ -120,7 +156,7 @@ cp .env.example .env
 npm start
 ```
 
-## Frontend
+#### Frontend
 
 ```bash
 cd frontend
@@ -129,9 +165,10 @@ cp .env.example .env
 npm run dev
 ```
 
-## Environment Variables
+### Environment Variables
 
-Backend
+#### Backend
+
 ```bash
 MONGODB_URI=your_connection_string
 DB_NAME=your_db_name
@@ -139,42 +176,44 @@ PORT=3000
 FRONTEND_URL=http://localhost:8081
 ```
 
-Frontend
+#### Frontend
+
 ```bash
 API_BASE_URL=http://localhost:3000
 ```
 
-#### Deployment
-	•	Frontend → Vercel
-	•	Backend → Render
-	•	Database → MongoDB Atlas
+<br>
 
----
+## Technical Highlights
 
-### Key Learnings
-	•	Full-stack architecture (frontend + backend separation)
-	•	REST API design
-	•	MongoDB integration with Node.js
-	•	Environment variables (local vs production)
-	•	CORS configuration across deployments
-	•	Modular JavaScript structure (controllers, services, models)
+Through this project I have:
 
-⸻
+- Designed a separate frontend/backend architecture
+- Built and consumed REST API endpoints
+- Implemented CRUD operations across multiple application resources
+- Worked with asynchronous frontend/API communication
+- Structured JavaScript using controllers, services and models
+- Integrated MongoDB Atlas with a Node.js/Express backend
+- Configured environment variables for development and production
+- Configured CORS between separately deployed applications
+- Deployed frontend and backend services independently
+- Used Git and GitHub for source control
 
-### Future Improvements
-	•	Authentication & user accounts
-	•	Search and filtering
-	•	Better UI validation and error handling
-	•	Mobile responsiveness
-	•	Export handover reports (PDF / CSV)
+<br>
 
----
+## Future Improvements
 
-### Author
+- Authentication & user accounts _(currently in development)_
+- Search and filtering
+- Better UI validation and error handling
+- Mobile responsiveness
+- Export handover reports (PDF / CSV)
+- Automated frontend and API testing
+- React and TypeScript frontend migration
 
-Sébastien Champeau
+<br>
+
+## Author
+
+Sebastien Champeau
 https://github.com/buildwithseb
-
----
-
-⭐ If you found this project useful, consider giving it a star!
