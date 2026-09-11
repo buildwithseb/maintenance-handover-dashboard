@@ -10,8 +10,8 @@ The application allows crews to track machinery status, telehuts, remote levels 
 
 ## Live Demo
 
-- **Frontend:** https://maintenance-handover-dashboard.vercel.app/
-- **Backend:** https://maintenance-handover-dashboard.onrender.com/
+- **Frontend:** https://maintenance-handover-tracker.vercel.app/
+- **Backend:** https://maintenance-handover-tracker.onrender.com/
 
 <br>
 

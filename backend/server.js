@@ -11,7 +11,7 @@ const port = process.env.PORT || 3000;
 
 const allowedOrigins = [
   "http://localhost:8081",
-  "https://maintenance-handover-dashboard.vercel.app"
+  "https://maintenance-handover-tracker.vercel.app"
 ];
 
 app.use(cors({
